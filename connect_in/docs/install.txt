@@ -1,0 +1,3 @@
+npx crete-react-project connect_in
+
+dans index.html : <script src="https://cdn.tailwindcss.com"></script>
