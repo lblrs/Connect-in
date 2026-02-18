@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Symfony\Component\HttpFoundation\Response;
 
 class AuthController extends Controller
 {
@@ -37,5 +38,41 @@ class AuthController extends Controller
             'message' => 'Successfully registered!',
             'user' => $user
         ], 201);
+    }
+
+
+
+    //Login
+
+    public function login(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required | string | email',
+            'password' => 'required | string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        //find the users form the email 
+        $user = User::where('email', $request->email)->first();
+
+        //Checking the existence of the user and the correctness of the password
+
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response()->json([
+                'message' => 'The information entred is incorrct'
+            ], 401);
+        }
+        //Creating a security token
+
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        return response()->json([
+            'message' => 'Welcome',
+            'access_token' => $token,
+            'token_type' => 'Bearer',
+        ]);
     }
 }
