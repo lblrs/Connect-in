@@ -5,7 +5,7 @@ import FormInput from "../components/Input";
 import Button from "../components/Button";
 
 function Login() {
-
+    
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
 
@@ -32,9 +32,11 @@ function Login() {
         const data = await response.json();
 
         if (response.ok) {
-            navigate("/profile")
+            localStorage.setItem('token', data.access_token);
+            localStorage.setItem('toket_type', data.token_type);
+            navigate("/profile");
         } else {
-            alert('Les identifiants ne correspendent pas : ' + data.message)
+            alert('Les identifiants ne correspendent pas : ' + data.message);
         }
     }
 
@@ -62,6 +64,7 @@ function Login() {
             </div>
         </div>
     );
+
 }
 
 
