@@ -5,23 +5,60 @@ import Button from "../components/Button";
 
 function Register() {
 
-    const [firstName, setFirstName] = useState('')
+    const [first_name, setFirstName] = useState('')
     const [last_name, setLastName] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [checkPassword, setCheckPassword] = useState('')
+
+
+    const submit = async (e) => {
+        e.preventDefault();
+
+        if (!first_name || !last_name || !email || !password || !checkPassword) {
+            alert("Veuillez renseigner tous les champs");
+            return;
+        }
+        
+        if (password !== checkPassword) {
+            alert("Mot de passe ne correspendent pas");
+            return
+        }
+
+
+        const response = await fetch('http://localhost:8000/api/register', {
+            method: 'POST',
+            headers: { 'Content-type': 'application/json' },
+            body: JSON.stringify({
+                first_name: first_name,
+                last_name: last_name,
+                email: email,
+                password: password
+            })
+
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            alert('Inscription reussi');
+        } else {
+            alert('eurreure : ' + data.message)
+        }
+    }
 
     return (
         <div className="bg-blue-300 h-screen w-screen flex flex-col items-center justify-center">
             <div>
                 <h1 className="mb-3 text-center w-full">Inscrivez-vous</h1>
 
-                <form className="flex flex-col gap-1 bg-gray-300 p-3 rounded-xl">
+                <form className="flex flex-col gap-1 bg-gray-300 p-3 rounded-xl" 
+                onSubmit={submit}>
 
 
                     <label htmlFor="first_name">Prénom</label>
                     <FormInput type="text"
-                        value={firstName}
+                        value={first_name}
                         onChange={(e) => setFirstName(e.target.value)}>
                     </FormInput>
 

@@ -1,6 +1,6 @@
-function FormInput ({className = "bg-black text-white"}) {
+function FormInput ({ className = "bg-black text-white", type, value, onChange}) {
     return (
-        <input className={className}></input>
+        <input className={className} type={type} value={value} onChange={onChange}></input>
     )
 }
 
