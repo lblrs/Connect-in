@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import FormInput from "../components/Input";
 import Button from "../components/Button";
 
@@ -35,11 +36,12 @@ function Login () {
     }
 
     return (
-        <div>
+        <div className="bg-blue-300 h-screen w-screen flex flex-col items-center justify-center">
             <div>
-                <h1>Connection</h1>
+                <h1 className="mb-3 text-center w-full">Connection</h1>
 
-                <form onSubmit={submit}>
+                <form className="flex flex-col gap-1 bg-gray-300 p-3 rounded-xl" 
+                onSubmit={submit}>
 
                     <label htmlFor="email">Email</label>
                     <FormInput value={email}
@@ -50,6 +52,8 @@ function Login () {
                     onChange={(e) => setPassword(e.target.value)}></FormInput>
 
                     <Button Arg="Valider"></Button>
+
+                    <Link to='/register' >Créer un compte</Link>
                 </form>
             </div>
         </div>
