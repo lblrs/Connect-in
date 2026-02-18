@@ -10,5 +10,9 @@ Route::get('/user', function (Request $request) {
 
 use App\Http\Controllers\AuthController;
 
-
+// Regitration
 Route::post('/register', [AuthController::class, 'register']);
+
+//Login
+Route::post('/login', [AuthController::class, 'login']);
+
