@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import FormInput from "../components/Input";
 import Button from "../components/Button";
 
@@ -11,6 +13,7 @@ function Register() {
     const [password, setPassword] = useState('')
     const [checkPassword, setCheckPassword] = useState('')
 
+    const navigate = useNavigate();
 
     const submit = async (e) => {
         e.preventDefault();
@@ -41,7 +44,7 @@ function Register() {
         const data = await response.json();
 
         if (response.ok) {
-            alert('Inscription reussi');
+            navigate('/login');
         } else {
             alert('eurreure : ' + data.message)
         }
@@ -87,7 +90,9 @@ function Register() {
                     </FormInput>
                     <Button Arg="sqdsqsqd"></Button>
 
+        <Link to="/login">Ja</Link>
                 </form>
+
             </div>
         </div>
     )
