@@ -2,7 +2,8 @@ import Nav from "../components/Nav";
 
 function Profile () {
     
-    const token = localStorage.getItem('token')
+    const token = localStorage.getItem('token');
+    
 
     return (
         <div className="w-screen h-screen bg-blue-500">
