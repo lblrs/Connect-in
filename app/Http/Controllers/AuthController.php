@@ -14,10 +14,10 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'first_name' => 'required | string | max:255',
-            'last_name' => 'required | string | max:255',
-            'email' => 'required | string | email | max:255 | unique:users',
-            'password' => 'required | string | min:8',
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8',
         ]);
 
         //Validation for transfer the data in database
@@ -74,5 +74,17 @@ class AuthController extends Controller
             'access_token' => $token,
             'token_type' => 'Bearer',
         ]);
+    }
+    public function logout(Request $request)
+    {
+        if ($request->user()) {
+            $request->user()->currentAccessToken()->delete();
+            return response()->json([
+                'message'=> 'Logged out successfully'
+            ]);
+            return response()->json([
+                'message'=> 'No active session found'
+            ], 401);
+        }
     }
 }
