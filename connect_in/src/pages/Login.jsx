@@ -1,12 +1,15 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import FormInput from "../components/Input";
 import Button from "../components/Button";
 
-function Login () {
-
+function Login() {
+    
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+
+    const navigate = useNavigate();
 
     const submit = async (e) => {
         e.preventDefault();
@@ -29,9 +32,11 @@ function Login () {
         const data = await response.json();
 
         if (response.ok) {
-            alert('Connection reussi');
+            localStorage.setItem('token', data.access_token);
+            localStorage.setItem('toket_type', data.token_type);
+            navigate("/profile");
         } else {
-            alert('Les identifiants ne correspendent pas : ' + data.message)
+            alert('Les identifiants ne correspendent pas : ' + data.message);
         }
     }
 
@@ -40,16 +45,17 @@ function Login () {
             <div>
                 <h1 className="mb-3 text-center w-full">Connection</h1>
 
-                <form className="flex flex-col gap-1 bg-gray-300 p-3 rounded-xl" 
-                onSubmit={submit}>
+                <form className="flex flex-col gap-1 bg-gray-300 p-3 rounded-xl"
+                    onSubmit={submit}>
 
                     <label htmlFor="email">Email</label>
                     <FormInput value={email}
-                    onChange={(e) => setEmail(e.target.value)}></FormInput>
+                        onChange={(e) => setEmail(e.target.value)}></FormInput>
 
                     <label htmlFor="password">Mot de passe</label>
-                    <FormInput value={password}
-                    onChange={(e) => setPassword(e.target.value)}></FormInput>
+                    <FormInput type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}></FormInput>
 
                     <Button Arg="Valider"></Button>
 
@@ -58,6 +64,7 @@ function Login () {
             </div>
         </div>
     );
+
 }
 
 
