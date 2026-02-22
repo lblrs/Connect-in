@@ -2,12 +2,6 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
-
-
 use App\Http\Controllers\AuthController;
 
 //Regitration
@@ -16,5 +10,11 @@ Route::post('/register', [AuthController::class, 'register']);
 //Login
 Route::post('/login', [AuthController::class, 'login']);
 
-//Logout
-Route::post('logout', [AuthController::class, 'logout'])-> middleware('auth:sanctum');
+//Protected routes (requires token)
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/user', function (Request $request) {
+        return $request->user();
+    });
+    //Logout
+    Route::post('logout', [AuthController::class, 'logout']);
+});
