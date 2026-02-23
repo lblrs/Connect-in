@@ -75,6 +75,7 @@ class AuthController extends Controller
             'token_type' => 'Bearer',
         ]);
     }
+        //Logout
     public function logout(Request $request)
     {
         if ($request->user()) {
@@ -87,6 +88,7 @@ class AuthController extends Controller
             ], 401);
         }
     }
+        // Update profile
     public function update(Request $request)
     {
         $user = $request->user();
