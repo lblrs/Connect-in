@@ -28,5 +28,11 @@ Route::middleware('auth:sanctum')->group(function () {
     
     // Create post
     Route::post('/posts', [PostController::class, 'createPost']);
+
+    //Get all posts
+    Route::get('/getAllPosts', [PostController::class, 'getAllPosts']);
+
+    //Get user posts
+    Route::get('/getUserPosts', [PostController::class, 'getUserPosts']);
 });
 

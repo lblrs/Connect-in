@@ -56,9 +56,12 @@ function Profile() {
     // Update Profile
     const UpdateProfile = async (e) => {
 
-        const response = await fetch('', {
+        const response = await fetch('http://localhost:8000/api/user/update', {
             method: 'PUT',
-            headers: { 'Content-type': 'application/json' },
+            headers: {
+                'Content-type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
             body: JSON.stringify({
                 first_name: first_name,
                 last_name: last_name,

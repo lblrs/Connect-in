@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Validator;
 
 class PostController extends Controller
 {
+    // Create post
     public function createPost(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -28,4 +29,23 @@ class PostController extends Controller
             "post" => $post
         ]);
     }
+
+
+    //Get all posts
+    public function getAllPosts()
+    {   
+        $posts = Post::all();
+        return response()->json($posts);
+
+    }
+
+
+    //Get user post
+    public function getUserPosts(Request $request)
+    {
+        $posts = $request->user()->posts;
+        return response()->json($posts);
+    }
+
+
 }
