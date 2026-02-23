@@ -48,4 +48,10 @@ class PostController extends Controller
     }
 
 
+    //Delete post
+    public function deletePost() 
+    {
+        
+    }
+
 }

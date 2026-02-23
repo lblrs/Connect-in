@@ -27,7 +27,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/user/update', [AuthController::class, 'update']);
     
     // Create post
-    Route::post('/posts', [PostController::class, 'createPost']);
+    Route::post('/createPost', [PostController::class, 'createPost']);
 
     //Get all posts
     Route::get('/getAllPosts', [PostController::class, 'getAllPosts']);
