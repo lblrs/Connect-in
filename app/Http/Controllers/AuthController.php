@@ -6,7 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Symfony\Component\HttpFoundation\Response;
+
 
 class AuthController extends Controller
 {
@@ -80,11 +80,38 @@ class AuthController extends Controller
         if ($request->user()) {
             $request->user()->currentAccessToken()->delete();
             return response()->json([
-                'message'=> 'Logged out successfully'
+                'message' => 'Logged out successfully'
             ]);
             return response()->json([
-                'message'=> 'No active session found'
+                'message' => 'No active session found'
             ], 401);
         }
+    }
+    public function update(Request $request)
+    {
+        $user = $request->user();
+
+        $validator = Validator::make($request->all(), [
+            'first_name' => 'string|max:255',
+            'last_name' => 'string|max:255',
+            'email' => 'string|email|max:255|unique:users,email,' . $user->id,
+            'password' => 'nullable|string|min:8|confirmed',
+        ]);
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $user->fill($request->only(['first_name', 'last_name', 'email']));
+
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->password);
+        }
+
+        $user->save();
+
+        return response()->json([
+            'message' => 'Profile updated successfully',
+            'user' => $user
+        ]);
     }
 }
