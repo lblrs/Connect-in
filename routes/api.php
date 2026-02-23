@@ -9,6 +9,7 @@ Route::get('/user', function (Request $request) {
 
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PostController;
 
 //Regitration
 Route::post('/register', [AuthController::class, 'register']);
@@ -18,3 +19,6 @@ Route::post('/login', [AuthController::class, 'login']);
 
 //Logout
 Route::post('logout', [AuthController::class, 'logout'])-> middleware('auth:sanctum');
+
+// Create post
+Route::post('/posts', [PostController::class, 'createPost'])-> middleware('auth:sanctum');
