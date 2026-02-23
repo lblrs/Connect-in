@@ -22,6 +22,9 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     //Logout
     Route::post('logout', [AuthController::class, 'logout']);
+
+    //Update
+    Route::put('/user/update', [AuthController::class, 'update']);
     
     // Create post
     Route::post('/posts', [PostController::class, 'createPost']);
