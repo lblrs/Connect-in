@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import FormInput from "../components/Input";
+import FormInput from "../components/FormInput";
 import Button from "../components/Button";
 
 function Login() {
