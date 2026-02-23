@@ -10,9 +10,8 @@ function Profile() {
     const [first_name, setFirstName] = useState('');
     const [last_name, setLastName] = useState('')
     const [email, setEmail] = useState('');
-    const [newPassword, setNewPassword] = useState('');
-    const [checkNewPassword, setCheckNewPassword] = useState('');
-    const [updateForm, setUpdateForm] = useState(false);
+
+    const [posts, setPosts] = useState([]);
 
 
 
@@ -41,7 +40,24 @@ function Profile() {
                 }
             };
 
+            const loadPosts = async () => {
+
+                const response = await fetch('http://localhost:8000/api/getUserPosts', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    }
+                })
+
+                if (response.ok) {
+                    const data = await response.json();
+                    setPosts(data);
+                }
+            }
+
             loadUser();
+            loadPosts();
 
         } else {
             navigate('/login');
@@ -170,6 +186,11 @@ function Profile() {
                 <button type="submit" className="bg-red-600" onClick={DeleteUser}>Supprimer le profile</button>
 
             </div>
+
+            <div>
+                
+            </div>
+
         </div>
 
     );
