@@ -4,13 +4,14 @@ import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
 // Import components
-import FormInput from "../components/Input";
+import FormInput from "../components/FormInput";
 import Button from "../components/Button";
 
 
 function Register() {
 
     // Input variables + setters
+    // useState
     const [first_name, setFirstName] = useState('')
     const [last_name, setLastName] = useState('')
     const [email, setEmail] = useState('')
