@@ -75,7 +75,7 @@ class AuthController extends Controller
             'token_type' => 'Bearer',
         ]);
     }
-        //Logout
+    //Logout
     public function logout(Request $request)
     {
         if ($request->user()) {
@@ -88,7 +88,7 @@ class AuthController extends Controller
             ], 401);
         }
     }
-        // Update profile
+    // Update profile
     public function update(Request $request)
     {
         $user = $request->user();
@@ -114,6 +114,32 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'Profile updated successfully',
             'user' => $user
+        ]);
+    }
+
+    public function destroy(Request $request)
+    {
+        $user = $request->user();
+
+        //User Choice: Should the content be deleted?
+        $delete_content = $request->boolean('delete_content');
+
+        if ($delete_content) {
+            $user->posts()->delete();
+            $user->comments()->delete();
+            $user->likes()->delete();
+        } 
+        else {
+            $user->posts()->update(['author_name' => 'Utilisateur supprimé']);
+            $user->comments()->update(['author_name' => 'Utilisateur supprimé']);
+            $user->likes()->delete();
+        }
+        //In both cases
+        $user->tokens()->delete();
+        $user->delete();
+
+        return response()->json([
+            'message' => 'Account successfully deleted'
         ]);
     }
 }
