@@ -26,7 +26,10 @@ Route::middleware('auth:sanctum')->group(function () {
     //Update
     Route::put('/user/update', [AuthController::class, 'update']);
     
-    // Create post
+    //Create post
     Route::post('/posts', [PostController::class, 'createPost']);
+
+    //Delete account
+    Route::delete('/user/delete',[AuthController::class, 'destroy']);
 });
 

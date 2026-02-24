@@ -134,7 +134,7 @@ class AuthController extends Controller
             $user->comments()->update(['author_name' => 'Utilisateur supprimé']);
             $user->likes()->delete();
         }
-        //In both cases
+        //In both cases!
         $user->tokens()->delete();
         $user->delete();
 
