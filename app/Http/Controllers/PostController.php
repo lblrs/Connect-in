@@ -70,4 +70,8 @@ class PostController extends Controller
 
     }
 
+
+    // Add comment
+    
+
 }
