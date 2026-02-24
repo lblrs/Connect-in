@@ -34,7 +34,7 @@ class PostController extends Controller
     //Get all posts
     public function getAllPosts()
     {   
-        $posts = Post::all();
+        $posts = Post::with('user')->get();
         return response()->json($posts);
 
     }
@@ -43,9 +43,15 @@ class PostController extends Controller
     //Get user post
     public function getUserPosts(Request $request)
     {
-        $posts = $request->user()->posts;
+        $posts = Post::with('user')->where('user_id', $request->user()->id)->get();
         return response()->json($posts);
     }
 
+
+    //Delete post
+    public function deletePost() 
+    {
+        
+    }
 
 }
