@@ -133,6 +133,23 @@ function Profile() {
         };
     };
 
+    const DeleteAll = async () => {
+
+        const response = await fetch('', {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (response.ok) {
+            localStorage.removeItem('token');
+            alert('Compte supprimée');
+            navigate('/register');
+        }
+    }
+
 
 
 
@@ -149,13 +166,13 @@ function Profile() {
 
         <div className="w-screen h-screen bg-blue-500 flex">
 
-            <div className="flex flex-col w-1/2 p-5 gap-3">
+            <div className="flex flex-col w-1/6 p-5 gap-3">
                 <h1 className="text-5xl">Profile</h1>
                 <p>{user.first_name} {user.last_name}</p>
                 <p>{user.email}</p>
                 <button className="bg-amber-50" onClick={logout}>Déconnection</button>
 
-                <div>
+                <div className="bg-amber-300">
 
                     <form className="flex flex-col justify-center"
                         onSubmit={UpdateProfile}>
@@ -183,12 +200,29 @@ function Profile() {
                     </form>
                 </div>
 
-                <button type="submit" className="bg-red-600" onClick={DeleteUser}>Supprimer le profile</button>
+                <div className="bg-red-300">
+                    <h2>SUPPRIMER LE PROFILE</h2>
 
+                        <button type="submit" className="bg-red-600 w-1/3 m-1" onClick={DeleteAll}>Supprimer le contenue</button>
+                        <button type="submit" className="bg-red-600 w-1/2 m-1" onClick={DeleteUser}>Supprimer juste le profile</button>
+
+                </div>
             </div>
 
+
+            {/* POSTS */}
             <div>
-                
+                {posts.map((post) =>
+                    <div key={post.id} className="gap-5 bg-amber-50 p-5 mb-3">
+                        <h2 className="text-2xl">{post.user.first_name} {post.user.last_name}</h2>
+                        <p>{post.content}</p>
+                    </div>
+                )}
+            </div>
+
+
+            <div>
+
             </div>
 
         </div>
