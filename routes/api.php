@@ -3,8 +3,10 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\LikeController;
 use App\Http\Controllers\PostController;
+use Dom\Comment;
 
 //Regitration
 Route::post('/register', [AuthController::class, 'register']);
@@ -30,7 +32,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/user/update', [AuthController::class, 'update']);
 
     //Delete account
-    Route::delete('/user/delete',[AuthController::class, 'destroy']);
+    Route::delete('/user/delete', [AuthController::class, 'destroy']);
 
 
     //POST
@@ -56,6 +58,12 @@ Route::middleware('auth:sanctum')->group(function () {
 
     //LIKE / COMMENTS
 
+    // Like
     Route::post('/post/{post}/like', [LikeController::class, 'toggle']);
-});
 
+    // Add comment
+    Route::post('/post/{post}/comment', [CommentController::class, 'createComment']);
+
+    //Edit comment
+    Route::put('/post/{post}/editComment', [CommentController::class, 'editPost']);
+});

@@ -33,7 +33,7 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        //Confirmation the data 
+        //Confirmation the data
         return response()->json([
             'message' => 'Successfully registered!',
             'user' => $user
@@ -55,7 +55,7 @@ class AuthController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
-        //find the users form the email 
+        //find the users form the email
         $user = User::where('email', $request->email)->first();
 
         //Checking the existence of the user and the correctness of the password
