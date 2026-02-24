@@ -23,7 +23,7 @@ Route::middleware('auth:sanctum')->group(function () {
     //Logout
     Route::post('logout', [AuthController::class, 'logout']);
 
-    //Update
+    //Update profile
     Route::put('/user/update', [AuthController::class, 'update']);
     
     // Create post
@@ -34,5 +34,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
     //Get user posts
     Route::get('/getUserPosts', [PostController::class, 'getUserPosts']);
+
+    //Edit post
+    Route::put('/editPost/{id}', [PostController::class, 'editPost']);
+
+    //Delete post
+    Route::delete('/deletePost/{id}', [PostController::class, 'deletePost']);
 });
 

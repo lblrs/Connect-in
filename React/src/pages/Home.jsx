@@ -67,22 +67,32 @@ function Home() {
     //Delete post
     const deletePost = async () => {
 
-        
+        // const response = await fetch(`http://localhost:8000/api/deletePost/${post.id}`, {
+        //     method: 'DELETE',
+        //     headers: {
+        //         'Content-type': 'application/json',
+        //         'Authorization': `Bearer ${token}`
+        //     },
+        // })
+
+        // if (response.ok) {
+        //     loadPosts();
+        // }
     }
 
-
     return (
-        <div className="h-screen bg-amber-500 flex flex-col items-center">
+        <div className="h-screen bg-black flex flex-col items-center">
 
-            <div>
+            <div className="w-1/2">
                 {posts.map((post) =>
-                    <div key={post.id} className="gap-5 bg-amber-50 p-5 mb-3">
-                        <h2 className="text-2xl">{post.user.first_name} {post.user.last_name}</h2>
-                        <p className="mb-5">{post.content}</p>
-                        <p>{post.created_at}</p>
+                    <div key={post.id} className="gap-5 bg-gray-500 p-5 m-5 rounded-3xl">
+                        <h2 className="text-3xl mb-5">{post.user.first_name} {post.user.last_name}</h2>
+                        <p className="mb-5 text-lg">{post.content}</p>
+                        <p className="justify-self-end">Crée le : {post.created_at}</p>
 
-                        {/* <button className="bg-red-600 text-white"
-                            onClick={deletePost}>Supprimer</button> */}
+                        <button className="bg-red-600 text-white"
+                            type="submit"
+                            onClick={deletePost}>Supprimer</button>
                     </div>
                 )}
 
