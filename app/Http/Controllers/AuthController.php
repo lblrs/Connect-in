@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
-    //Handle new user registration requests (OOP)
+    //1 Func: Handle new user registration requests (OOP)
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -42,7 +42,7 @@ class AuthController extends Controller
 
 
 
-    //Login
+    //2 Func: Login
 
     public function login(Request $request)
     {
@@ -75,7 +75,7 @@ class AuthController extends Controller
             'token_type' => 'Bearer',
         ]);
     }
-    //Logout
+    //3 Func: Logout
     public function logout(Request $request)
     {
         if ($request->user()) {
@@ -88,7 +88,7 @@ class AuthController extends Controller
             ], 401);
         }
     }
-    // Update profile
+    //4 Func: Update profile
     public function update(Request $request)
     {
         $user = $request->user();
@@ -116,7 +116,7 @@ class AuthController extends Controller
             'user' => $user
         ]);
     }
-
+    //5 Func: Delete profles
     public function destroy(Request $request)
     {
         $user = $request->user();
