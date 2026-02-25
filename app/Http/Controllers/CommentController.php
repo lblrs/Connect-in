@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Comment;
 use App\Models\Post;
 use Illuminate\Support\Facades\Validator;
+use SebastianBergmann\CodeCoverage\Report\PHP;
 
 class CommentController extends Controller
 {
@@ -31,13 +32,31 @@ class CommentController extends Controller
         return response()->json(['message' => 'Commentaire ajouté']);
     }
 
-    public function editPost(Request $request, $id)
+
+    // Get comments
+    public function getAllComments(Post $post)
     {
-        $comment = Comment::findOrFail($id);
-        $this->authorize('update', $comment);
+        $comments = Comment::where('post_id', $post->id)->with('user')->get();
+        return response()->json($comments);
+    }
+
+
+    // Edit comment
+    public function editComment(Request $request, Post $post, Comment $comment)
+    {
+        $this->authorize('edit', $comment);
         $request->validate(['content' => 'required|string|max:280']);
         $comment->fill($request->only(['content']));
         $comment->save();
         return response()->json(['message' => 'commentaire modifié', $comment]);
+    }
+
+
+    // Delete comment
+    public function deleteComment(Post $post, Comment $comment)
+    {
+        $this->authorize('delete', $comment);
+        $comment->delete();
+        return response()->json(['message' => 'Commentaire supprimé']);
     }
 }

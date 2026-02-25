@@ -35,7 +35,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/user/delete', [AuthController::class, 'destroy']);
 
 
-    //POST
+    //POSTS
 
     //Create post
     Route::post('/posts', [PostController::class, 'createPost']);
@@ -65,5 +65,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/post/{post}/comment', [CommentController::class, 'createComment']);
 
     //Edit comment
-    Route::put('/post/{post}/editComment', [CommentController::class, 'editPost']);
+    Route::put('/post/{post}/editComment/{comment}', [CommentController::class, 'editComment']);
+
+    // Delet comment
+    Route::delete('/post/{post}/deleteComment/{comment}', [CommentController::class, 'deleteComment']);
+
+    // Get comments
+    Route::get('/post/{post}/getComments', [CommentController::class, 'getAllComments']);
 });

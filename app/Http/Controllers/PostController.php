@@ -14,16 +14,26 @@ class PostController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'content' => 'required|string|max:280',
+            'image' => 'nullable|max:2048'
         ]);
 
-        if ($validator -> fails()) {
+
+        if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
+        }
+
+        $imagePath = null;
+
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('posts', 'public');
         }
 
         $post = Post::create([
             'user_id' => $request->user()->id,
             'content' => $request->content,
+            'image' => $imagePath
         ]);
+
 
         return response()->json([
             "message" => "Post created",
@@ -34,10 +44,9 @@ class PostController extends Controller
 
     //Get all posts
     public function getAllPosts()
-    {   
+    {
         $posts = Post::with('user')->get();
         return response()->json($posts);
-
     }
 
 
@@ -54,24 +63,19 @@ class PostController extends Controller
     {
         $post = Post::findOrFail($id);
         $this->authorize('update', $post);
-        $request->validate( ['content' => 'required|string|max:280'] );
+        $request->validate(['content' => 'required|max:280']);
+        $request->validate(['image' => 'nullable|max:2048']);
         $post->fill($request->only(['content']));
         $post->save();
         return response()->json($post);
     }
 
     //Delete post
-    public function deletePost($id) 
+    public function deletePost($id)
     {
         $post = Post::findOrFail($id);
         $this->authorize('delete', $post);
         $post->delete();
         return response()->json(['message' => 'Post supprimé']);
-
     }
-
-
-    // Add comment
-    
-
 }
