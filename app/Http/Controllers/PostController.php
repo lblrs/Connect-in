@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
+use App\Models\Comment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -71,11 +72,12 @@ class PostController extends Controller
     }
 
     //Delete post
-    public function deletePost($id)
+    public function deletePost(Comment $comments, $id)
     {
         $post = Post::findOrFail($id);
         $this->authorize('delete', $post);
         $post->delete();
+        $comments->delete();
         return response()->json(['message' => 'Post supprimé']);
     }
 }
