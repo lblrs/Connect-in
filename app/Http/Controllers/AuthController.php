@@ -65,6 +65,7 @@ class AuthController extends Controller
                 'message' => 'The information entred is incorrct'
             ], 401);
         }
+
         //Creating a security token
 
         $token = $user->createToken('auth_token')->plainTextToken;
@@ -75,6 +76,8 @@ class AuthController extends Controller
             'token_type' => 'Bearer',
         ]);
     }
+
+
     //3 Func: Logout
     public function logout(Request $request)
     {
@@ -88,6 +91,8 @@ class AuthController extends Controller
             ], 401);
         }
     }
+
+
     //4 Func: Update profile
     public function update(Request $request)
     {
@@ -96,6 +101,7 @@ class AuthController extends Controller
         $validator = Validator::make($request->all(), [
             'first_name' => 'string|max:255',
             'last_name' => 'string|max:255',
+            'avatar' => 'image|max:2048',
             'email' => 'string|email|max:255|unique:users,email,' . $user->id,
             'password' => 'nullable|string|min:8|confirmed',
         ]);
@@ -104,6 +110,12 @@ class AuthController extends Controller
         }
 
         $user->fill($request->only(['first_name', 'last_name', 'email']));
+
+        $imagePath = null;
+        if ($request->hasFile('avatar')) {
+            $imagePath = $request->file('avatar')->store('user', 'public');
+            $user->avatar = $imagePath;
+        }
 
         if ($request->filled('password')) {
             $user->password = Hash::make($request->password);
@@ -116,6 +128,8 @@ class AuthController extends Controller
             'user' => $user
         ]);
     }
+
+
     //5 Func: Delete profles
     public function destroy(Request $request)
     {

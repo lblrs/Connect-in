@@ -66,7 +66,7 @@ class PostController extends Controller
         $this->authorize('update', $post);
         $request->validate(['content' => 'required|max:280']);
         $request->validate(['image' => 'nullable|max:2048']);
-        $post->fill($request->only(['content']));
+        $post->fill($request->only(['content', 'image']));
         $post->save();
         return response()->json($post);
     }
