@@ -88,7 +88,8 @@ function Home() {
                     <div key={post.id} className="gap-5 bg-gray-500 p-5 m-5 rounded-3xl">
                         <h2 className="text-3xl mb-5">{post.user.first_name} {post.user.last_name}</h2>
                         <p className="mb-5 text-lg">{post.content}</p>
-                        <img src={`http://localhost:8000/storage/${post.image}`} alt="Post" />                        <p className="justify-self-end">Crée le : {post.created_at}</p>
+                        <img src={`http://localhost:8000/storage/${post.image}`} alt="Post" />
+                        <p className="justify-self-end">Crée le : {post.created_at}</p>
 
                         <button className="bg-red-600 text-white"
                             type="submit"

@@ -9,7 +9,9 @@ function Profile() {
     const [user, setUser] = useState(null);
     const [first_name, setFirstName] = useState('');
     const [last_name, setLastName] = useState('')
+    const [avatar, setAvatar] = useState(null);
     const [email, setEmail] = useState('');
+
 
     const [posts, setPosts] = useState([]);
 
@@ -36,6 +38,7 @@ function Profile() {
                     setUser(data);
                     setFirstName(data.first_name);
                     setLastName(data.last_name);
+                    setAvatar(data.avatar);
                     setEmail(data.email);
                 }
             };
@@ -70,23 +73,32 @@ function Profile() {
 
     // Update Profile
     const UpdateProfile = async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData();
+
+        formData.append('first_name', first_name);
+        formData.append('last_name', last_name);
+        formData.append('email', email);
+
+        if (avatar instanceof File) {
+            formData.append('avatar', avatar);
+        }
+
+        formData.append('_method', 'PUT');
 
         const response = await fetch('http://localhost:8000/api/user/update', {
-            method: 'PUT',
+            method: 'POST',
             headers: {
-                'Content-type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
-            body: JSON.stringify({
-                first_name: first_name,
-                last_name: last_name,
-                email: email,
-            })
-
+            body: formData
         })
 
         if (response.ok) {
-            navigate('/profile');
+            const data = await response.json();
+            setUser(data.user);
+            window.location.reload();
         }
 
     }
@@ -168,6 +180,7 @@ function Profile() {
 
             <div className="flex flex-col w-1/6 p-5 gap-3">
                 <h1 className="text-5xl">Profile</h1>
+                <img src={`http://localhost:8000/storage/${user.avatar}`}></img>
                 <p>{user.first_name} {user.last_name}</p>
                 <p>{user.email}</p>
                 <button className="bg-amber-50" onClick={logout}>Déconnection</button>
@@ -197,14 +210,18 @@ function Profile() {
                             placeholder={user.email}
                             onChange={(e) => setEmail(e.target.value)}></input>
 
+                        <input type="file"
+                            className="m-3"
+                            onChange={(e) => setAvatar(e.target.files[0])}></input>
+
                     </form>
                 </div>
 
                 <div className="bg-red-300">
                     <h2>SUPPRIMER LE PROFILE</h2>
 
-                        <button type="submit" className="bg-red-600 w-1/3 m-1" onClick={DeleteAll}>Supprimer le contenue</button>
-                        <button type="submit" className="bg-red-600 w-1/2 m-1" onClick={DeleteUser}>Supprimer juste le profile</button>
+                    <button type="submit" className="bg-red-600 w-1/3 m-1" onClick={DeleteAll}>Supprimer le contenue</button>
+                    <button type="submit" className="bg-red-600 w-1/2 m-1" onClick={DeleteUser}>Supprimer juste le profile</button>
 
                 </div>
             </div>
@@ -228,7 +245,7 @@ function Profile() {
         </div>
 
     );
-}
 
+}
 
 export default Profile;
