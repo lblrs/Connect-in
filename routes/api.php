@@ -8,6 +8,7 @@ use App\Http\Controllers\LikeController;
 use App\Http\Controllers\PostController;
 
 
+
 //Regitration
 Route::post('/register', [AuthController::class, 'register']);
 
@@ -35,7 +36,7 @@ Route::middleware('auth:sanctum')->group(function () {
     //POSTS
 
     //Create post
-    Route::post('/createPost', [PostController::class, 'createPost']);
+    Route::post('/posts', [PostController::class, 'createPost']);
 
     //Get all posts
     Route::get('/getAllPosts', [PostController::class, 'getAllPosts']);
@@ -50,10 +51,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/deletePost/{id}', [PostController::class, 'deletePost']);
 
 
-    
+
     //LIKE / COMMENTS
 
     // Like
+    Route::post('/post/{id}/like', [LikeController::class, 'toggle']);
     Route::post('/post/{id}/like', [LikeController::class, 'toggle']);
 
     // Add comment
@@ -61,11 +63,15 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Get comments
     Route::get('/post/{id}/getComments', [CommentController::class, 'getAllComments']);
+    Route::post('/post/{id}/comment', [CommentController::class, 'createComment']);
+
+    // Get comments
+    Route::get('/post/{id}/getComments', [CommentController::class, 'getAllComments']);
 
     //Edit comment
     Route::put('/post/{post_id}/editComment/{comment_id}', [CommentController::class, 'editComment']);
+    Route::put('/post/{post_id}/editComment/{comment_id}', [CommentController::class, 'editComment']);
 
-    // Delete comment
+    // Delet comment
     Route::delete('/post/{post_id}/deleteComment/{comment_id}', [CommentController::class, 'deleteComment']);
-
 });

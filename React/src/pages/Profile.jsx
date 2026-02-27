@@ -12,6 +12,7 @@ function Profile() {
     const [avatar, setAvatar] = useState(null);
     const [email, setEmail] = useState('');
 
+    const [comment, setComment] = useState('');
 
     const [posts, setPosts] = useState([]);
 
@@ -20,44 +21,45 @@ function Profile() {
 
     // User info
 
+    const loadUser = async () => {
+        const response = await fetch('http://localhost:8000/api/user', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            setUser(data);
+            setFirstName(data.first_name);
+            setLastName(data.last_name);
+            setAvatar(data.avatar);
+            setEmail(data.email);
+        }
+    };
+
+    const loadPosts = async () => {
+
+        const response = await fetch('http://localhost:8000/api/getUserPosts', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        })
+
+        if (response.ok) {
+            const data = await response.json();
+            setPosts(data);
+        }
+    }
+
+
     useEffect(() => {
 
         if (token) {
-
-            const loadUser = async () => {
-                const response = await fetch('http://localhost:8000/api/user', {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    setUser(data);
-                    setFirstName(data.first_name);
-                    setLastName(data.last_name);
-                    setAvatar(data.avatar);
-                    setEmail(data.email);
-                }
-            };
-
-            const loadPosts = async () => {
-
-                const response = await fetch('http://localhost:8000/api/getUserPosts', {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    }
-                })
-
-                if (response.ok) {
-                    const data = await response.json();
-                    setPosts(data);
-                }
-            }
 
             loadUser();
             loadPosts();
@@ -67,7 +69,6 @@ function Profile() {
         }
 
     }, []);
-
 
 
 
@@ -163,6 +164,26 @@ function Profile() {
     }
 
 
+    const submitComment = async (e, postId) => {
+        e.preventDefault();
+
+        const response = await fetch(`http://localhost:8000/api/post/${postId}/comment`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                content: comment
+            })
+        });
+
+        if (response.ok) {
+            setComment('');
+            loadPosts();
+        }
+    }
+
 
 
     if (!user) {
@@ -176,73 +197,62 @@ function Profile() {
     // HTML
     return (
 
-        <div className="w-screen h-screen bg-blue-500 flex">
+        <div className="w-screen h-screen bg-stone-300 flex flex-col items-center">
 
-            <div className="flex flex-col w-1/6 p-5 gap-3">
-                <h1 className="text-5xl">Profile</h1>
-                <img src={`http://localhost:8000/storage/${user.avatar}`}></img>
-                <p>{user.first_name} {user.last_name}</p>
-                <p>{user.email}</p>
-                <button className="bg-amber-50" onClick={logout}>Déconnection</button>
-
-                <div className="bg-amber-300">
-
-                    <form className="flex flex-col justify-center"
-                        onSubmit={UpdateProfile}>
-
-                        <button type="submit" className="bg-yellow-400">Modifier le profile</button>
-
-                        <input
-                            type="text"
-                            className="m-3"
-                            placeholder={user.first_name}
-                            onChange={(e) => setFirstName(e.target.value)}></input>
-
-                        <input
-                            type="text"
-                            className="m-3"
-                            placeholder={user.last_name}
-                            onChange={(e) => setLastName(e.target.value)}></input>
-
-                        <input
-                            type="email"
-                            className="m-3"
-                            placeholder={user.email}
-                            onChange={(e) => setEmail(e.target.value)}></input>
-
-                        <input type="file"
-                            className="m-3"
-                            onChange={(e) => setAvatar(e.target.files[0])}></input>
-
-                    </form>
-                </div>
-
-                <div className="bg-red-300">
-                    <h2>SUPPRIMER LE PROFILE</h2>
-
-                    <button type="submit" className="bg-red-600 w-1/3 m-1" onClick={DeleteAll}>Supprimer le contenue</button>
-                    <button type="submit" className="bg-red-600 w-1/2 m-1" onClick={DeleteUser}>Supprimer juste le profile</button>
-
-                </div>
+            <div className="w-1/2 bg-white p-8 mt-10 rounded-xl">
+                <img className="w-44 h-44 rounded-full border-4" src={`http://localhost:8000/storage/${user.avatar}`}></img>
+                <p className="mt-8 text-5xl">{user.first_name} {user.last_name}</p>
+                <p className="mt-2 text-xl">{user.email}</p>
             </div>
 
 
             {/* POSTS */}
-            <div>
+
+            <div className="w-1/2 bg-white p-8 mt-10 rounded-xl">
+                <h1 className="text-5xl">Activité</h1>
+                <hr></hr>
+
                 {posts.map((post) =>
-                    <div key={post.id} className="gap-5 bg-amber-50 p-5 mb-3">
-                        <h2 className="text-2xl">{post.user.first_name} {post.user.last_name}</h2>
-                        <p>{post.content}</p>
+
+                    <div key={post.id} className="mt-3 p-5 border rounded-xl ">
+                        <div className="flex">
+                            <img className="w-16 h-16 rounded-full " src={`http://localhost:8000/storage/${user.avatar}`}></img>
+                            <h2 className="text-2xl px-3">{post.user.first_name} {post.user.last_name}</h2>
+                        </div>
+                        <p className="mt-10 mb-5 mx-5">{post.content}</p>
+                        <hr />
+
+                        <form onSubmit={(e) => submitComment(e, post.id)}>
+                            <input className="w-1/2 border m-3 rounded-3xl p-1" placeholder="Ajoutez un commentaire"
+                                value={comment}
+                                onChange={(e) => setComment(e.target.value)}></input>
+                            <button type="submit">Envoyer</button>
+                        </form>
+
+                        <div className="mt-5">
+                            {post.comments && post.comments.map((comment) => (
+                                <div key={comment.id}>
+
+                                    <div className="flex">
+                                        <img className="w-10 h-10 rounded-full " src={`http://localhost:8000/storage/${comment.user.avatar}`}></img>
+                                        <h2 className="px-3">{comment.user.first_name} {comment.user.last_name}</h2>
+                                    </div>
+
+                                    <p className="px-5 py-3">{comment.content}</p>
+
+                                </div>
+                            ))}
+                        </div>
+
+
                     </div>
+
+
                 )}
-            </div>
-
-
-            <div>
 
             </div>
 
-        </div>
+        </div >
 
     );
 

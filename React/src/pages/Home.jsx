@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import ButtonPost from "../components/ButtonPost";
 
 function Home(){
-    // Memory section (States) 
+    // Memory section (States)
     const [posts, setPost] = useState([]);
     const [newPost, setNewPost] = useState('');
     const [likedPosts, setLikedPosts] = useState({});
@@ -23,12 +23,12 @@ function Home(){
                     'Authorization': `Bearer ${token}`
                 }
             });
-            
+
             if (response.ok) {
                 const data = await response.json();
                 setPost(data);
             }
-            
+
             else if (response.status === 401) {
                 navigate('/login');
             }
@@ -80,7 +80,7 @@ function Home(){
                     'Accept': 'application/json'
                 },
                 body: JSON.stringify({
-                    content: newPost 
+                    content: newPost
                 })
             });
             if (response.ok) {
@@ -88,121 +88,44 @@ function Home(){
                 setNewPost("");
                 loadPosts();
             }
-        } catch (error) {
-            console.error("Error during publication:", error);
         }
-    };
-    //Time management
-    const formatRelativeTime = (dateString) => {
-        const now = new Date();
-        const postDate = new Date(dateString);
-        const diff = Math.floor((now - postDate) / 1000);
+    }
 
-        if(diff < 60) return "A'instant";
-        if(diff < 3600) return `Il y a ${Math.floor(diff / 60)}min`;
-        if(diff < 86400) return `Il y a ${Math.floor(diff / 3600)}h`;
-        if(diff < 604800) return `Il y a ${Math.floor(diff / 86400)}j`;
 
-        return "Il y a 1 semain";
-    };
-    //Like and Dislike
-    const toggleLike = (postId) =>{
-        setLikedPosts(prev =>({
-            ...prev,
-            [postId]: !prev[postId]
-        }));
-    };
-    
-    //Delete the Posts
-    const deletePost = async (postId) => {
-        if(!window.confirm("Voulez-vous vraiment supprimer cette publication ?")) return;
+    return (
+        <div className="h-screen bg-black flex flex-col items-center">
 
-        try{
-            const response = await fetch(`http://localhost:8000/api/deletePost/${postId}`, {
-                method: 'DELETE',
-                headers: {'Authorization':`Bearer ${token}`}
-            });
-            if(response.ok) {
-                loadPosts();
-            }
-        } catch (error) {
-            console.error('Erreur lors de la suppression du post', error);
-        }
-    };
+            <div className="w-1/2">
+                {posts.map((post) =>
+                    <div key={post.id} className="gap-5 bg-gray-500 p-5 m-5 rounded-3xl">
+                        <h2 className="text-3xl mb-5">{post.user.first_name} {post.user.last_name}</h2>
+                        <p className="mb-5 text-lg">{post.content}</p>
+                        <img src={`http://localhost:8000/storage/${post.image}`} alt="Post" />
+                        <p className="justify-self-end">Crée le : {post.created_at}</p>
 
-    //Edit the Posts
-    const updatePost = async (postId) => {
-        try {
-            const response = await fetch (`http://localhost:8000/api/editPost/${postId}`, {
-                method:'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({content: editContent})
-            });
-            if(response.ok){
-                setEditingPostId(null);
-                loadPosts();
-            }
-        } catch (error) {
-            console.error('Erreur lors de la modification du post', error);
-        }
-    };
+                        <button className="bg-red-600 text-white"
+                            type="submit"
+                        >Supprimer</button>
+                    </div>
+                )}
 
-    //Send new comment
-    const handleComment = async (postId) => {
-        const text = commentTexts[postId];
-        if(!text?.trim()) return;
+            </div>
 
-        try{
-            const response = await fetch(`http://localhost:8000/api/post/${postId}/comment`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                    
-            },
-            body: JSON.stringify({ content: text})
-            });
-            if(response.ok){
-                setCommentTexts(prev=>({ ...prev, [postId]: ''}));
-                loadPosts();
-            }
-        } catch (error) {
-            console.error("Erreur lors de l'envoi du commentaire", error);
-        }
-    };
+            <form className="flex flex-col" onSubmit={submit}>
 
-    //Delete the Comments
+                <textarea
+                    value={newPost}
+                    onChange={(e) => setNewPost(e.target.value)}>
+                </textarea>
 
-    const deleteComment = async (postId, commentId) => {
-            
-        if (!commentId) return;
+                <button className="bg-white mt-3" type="submit">Valider</button>
 
-        
-            if (!window.confirm("Voulez-vous supprimer ce commentaire ?")) return;
+            </form>
 
-            try {
-                const response = await fetch(`http://localhost:8000/api/post/${postId}/deleteComment/${commentId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Accept': 'application/json' 
-                    }
-                });
+        </div>
+    )
 
-                if (response.ok) {
-                    loadPosts(); 
-                } else if (response.status === 403) {
-                    alert("");
-                }
-            } catch (error) {
-                console.error('Erreur suppression commentaire', error);
-            }
-        };
-        return(
-            <p>application in loaded</p>
-        )
+
 }
+
 export default Home;

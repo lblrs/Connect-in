@@ -5,7 +5,7 @@ import FormInput from "../components/FormInput";
 import Button from "../components/Button";
 
 function Login() {
-    
+
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
 
@@ -64,7 +64,6 @@ function Login() {
             </div>
         </div>
     );
-
 }
 
 
