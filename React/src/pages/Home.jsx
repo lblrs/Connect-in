@@ -64,21 +64,6 @@ function Home() {
         }
     }
 
-    //Delete post
-    const deletePost = async () => {
-
-        // const response = await fetch(`http://localhost:8000/api/deletePost/${post.id}`, {
-        //     method: 'DELETE',
-        //     headers: {
-        //         'Content-type': 'application/json',
-        //         'Authorization': `Bearer ${token}`
-        //     },
-        // })
-
-        // if (response.ok) {
-        //     loadPosts();
-        // }
-    }
 
     return (
         <div className="h-screen bg-black flex flex-col items-center">
@@ -93,7 +78,7 @@ function Home() {
 
                         <button className="bg-red-600 text-white"
                             type="submit"
-                            onClick={deletePost}>Supprimer</button>
+                        >Supprimer</button>
                     </div>
                 )}
 

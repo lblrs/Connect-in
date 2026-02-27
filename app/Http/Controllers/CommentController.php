@@ -7,29 +7,28 @@ use Illuminate\Http\Request;
 use App\Models\Comment;
 use App\Models\Post;
 use Illuminate\Support\Facades\Validator;
-use SebastianBergmann\CodeCoverage\Report\PHP;
 
 class CommentController extends Controller
 {
-    public function createComment(Post $post, Request $request)
+    public function createComment(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
             'content' => 'required|string|max:280',
         ]);
 
-        if($validator -> fails()) {
+        if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
 
         $userId = auth()->id();
 
-        Comment::create([
+        $comment = Comment::create([
             'user_id' => $userId,
-            'post_id' => $post->id,
+            'post_id' => $id,
             'content' => $request->content,
         ]);
 
-        return response()->json(['message' => 'Commentaire ajouté']);
+        return response()->json(['message' => 'Commentaire ajouté', 'comment' => $comment]);
     }
 
 
