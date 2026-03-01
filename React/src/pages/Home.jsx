@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import ButtonPost from "../components/ButtonPost";
+import { Image as ImageIcon, Video, Calendar, Smile } from "lucide-react";
+
 
 function Home(){
     // Memory section (States) 
@@ -203,6 +205,7 @@ function Home(){
         };
         return(
             //Logo and branding
+            <>
             <nav className="mt-3 px-4 max-w-5xl mx-auto flex justify-between items-center relative">
 
                     <div className="flex items-center gap-3 group cursor-pointer">
@@ -226,6 +229,42 @@ function Home(){
                         </div>
                     </div>
             </nav>
+
+            <main className="max-w-xl mx-auto px-4">
+               
+                {/* Post Creator*/}
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6">
+
+                    <form onSubmit={submit}>
+
+                        <textarea 
+                            className="w-full p-3 bg-gray-50 rounded-xl border-none outline-none text-sm text-gray-700 resize-none focus:ring-1 focus:ring-blue-100"
+                            placeholder="Quoi de neuf, Mohamed ?"
+                            rows="3"
+                            value={newPost}
+                            onChange={(e) => setNewPost(e.target.value)}
+                        />
+
+                        <div className="flex justify-between items-center mt-3 pt-3 border-t border-gray-50">
+
+                            <button type="button" className="flex itmes-center gap-2 px-3 py-2 rounded-lg hover:bg-blue-50
+                                text-blue-600 transition-all group">
+                                <ImageIcon size={20} className="group-hover:scale-110 transition-transform"></ImageIcon>
+                                <span className="hidden md:block text-[13px] font-semibold">Photo</span>
+                            </button>
+
+                            <ButtonPost
+                                Arg="Publier" 
+                                type="submit"
+                                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-1.5 rounded-full font-bold text-xs shadow-sm transition-all active:scale-95" 
+                            />
+                        </div>
+                        
+                    </form>
+                </div>
+            </main>
+
+            </>
         )
 }
 export default Home;
