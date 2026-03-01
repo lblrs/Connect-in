@@ -202,7 +202,30 @@ function Home(){
             }
         };
         return(
-            <p>application in loaded</p>
+            //Logo and branding
+            <nav className="mt-3 px-4 max-w-5xl mx-auto flex justify-between items-center relative">
+
+                    <div className="flex items-center gap-3 group cursor-pointer">
+                        <div className="flex flex-col">
+                            <h1 className="text-xl font-black text-gray-900 tracking-tighter leading-none">NEXUS</h1>
+                            <span className="text-[9px] font-bold text-blue-600 tracking-[0.2em] uppercase mt-0.5">Platform</span>
+                        </div>
+                    </div>
+
+                    <div className="flex items-center gap-4">
+                        <div className="hidden sm:flex flex-col items-end border-r border-gray-100 pr-4">
+                            <div className="flex items-center gap-1 mt-1">
+                                <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
+                                <span className="text-[10px] font-medium text-gray-400">En ligne</span>
+                            </div>
+                        </div>
+
+                        <div className="relative">
+                            <div className="w-10 h-10 rounded-full ring-2 ring-offset-2 ring-blue-500/20 overflow-hidden
+                            cursor-pointer hover:ring-blue-500/50 transition-all shadow-md active:scale-90"></div>
+                        </div>
+                    </div>
+            </nav>
         )
 }
 export default Home;
