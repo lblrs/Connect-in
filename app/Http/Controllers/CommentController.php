@@ -11,7 +11,7 @@ use SebastianBergmann\CodeCoverage\Report\PHP;
 
 class CommentController extends Controller
 {
-    public function createComment(Post $post, Request $request)
+    public function createComment($id, Request $request)
     {
         $validator = Validator::make($request->all(), [
             'content' => 'required|string|max:280',
@@ -23,13 +23,16 @@ class CommentController extends Controller
 
         $userId = auth()->id();
 
-        Comment::create([
+        $comment = Comment::create([
             'user_id' => $userId,
-            'post_id' => $post->id,
+            'post_id' => $id,
             'content' => $request->content,
         ]);
 
-        return response()->json(['message' => 'Commentaire ajouté']);
+        return response()->json([
+        'message' => 'Commentaire ajouté', 
+        'comment' => $comment->load('user')
+        ]);
     }
 
 
@@ -53,10 +56,21 @@ class CommentController extends Controller
 
 
     // Delete comment
-    public function deleteComment(Post $post, Comment $comment)
-    {
-        $this->authorize('delete', $comment);
+
+        public function deleteComment($post_id, $comment_id) 
+        {
+    
+        $comment = Comment::find($comment_id);
+        if (!$comment) {
+            return response()->json(['message' => 'Commentaire non trouvé'], 404);
+        }
+        if ($comment->user_id !== auth()->id()) {
+            return response()->json([
+                'message' => ''
+            ], 403);
+        }
         $comment->delete();
-        return response()->json(['message' => 'Commentaire supprimé']);
+
+        return response()->json(['message' => 'Commentaire supprimé avec succès']);
     }
 }
