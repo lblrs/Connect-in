@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import ButtonPost from "../components/ButtonPost";
-import { Image as ImageIcon, Video, Calendar, Smile } from "lucide-react";
+import { MoreHorizontal,Edit2, Trash2, Image as ImageIcon,Send, Heart,MessageCircle } from "lucide-react";
 
 
 function Home(){
@@ -15,6 +15,8 @@ function Home(){
     const [editingPostId, setEditingPostId] = useState(null);
     const [editContent, setEditContent] = useState("");
     const [userId, setUserId] = useState(null);
+    const [userProfile, setUserProfile] = useState(null);
+    const [openMenuId, setOpenMenuId] = useState(null);
     //1: To get information from the server
     const loadPosts = async() =>{
         try {
@@ -51,6 +53,7 @@ function Home(){
         if (response.ok) {
             const data = await response.json();
             setUserId(data.id);
+            setUserProfile(data);
         }
     } catch (error) {
         console.error("Erreur fetch user:", error);
@@ -206,7 +209,8 @@ function Home(){
         return(
             //Logo and branding
             <>
-            <nav className="mt-3 px-4 max-w-5xl mx-auto flex justify-between items-center relative">
+            
+            <nav className="mt-3 mb-3 px-4 max-w-5xl mx-auto flex justify-between items-center relative">
 
                     <div className="flex items-center gap-3 group cursor-pointer">
                         <div className="flex flex-col">
@@ -239,7 +243,7 @@ function Home(){
 
                         <textarea 
                             className="w-full p-3 bg-gray-50 rounded-xl border-none outline-none text-sm text-gray-700 resize-none focus:ring-1 focus:ring-blue-100"
-                            placeholder="Quoi de neuf, Mohamed ?"
+                            placeholder={`Quoi de neuf, ${userProfile?.first_name} ?`}
                             rows="3"
                             value={newPost}
                             onChange={(e) => setNewPost(e.target.value)}
@@ -262,8 +266,63 @@ function Home(){
                         
                     </form>
                 </div>
-            </main>
+                <div className="space-y-4">
 
+                    {posts.length === 0 && (
+                        <div className="text-center py-12 text-gray-400 italic bg-white rounded-2xl border border-dashed
+                         border-gray-200">Aucune publication pour le moment...
+                        </div>
+                    )}
+
+                    {posts.map((post) => (
+                        <article key={post.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+
+                            <header className="p-4 flex justify-between items-center">
+                                <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate(`/profile/${post.user?.id}`)}>
+                                    <img 
+                                        src={`https://ui-avatars.com/api/?name=${post.user?.first_name}&background=0D8ABC&color=fff`} 
+                                        className="w-11 h-11 rounded-full border-2 border-gray-50" 
+                                        alt="Avatar" 
+                                    />
+                                    <div>
+                                        <h2 className="font-bold text-sm text-gray-900">{post.user?.first_name}{post.user?.last_name}</h2>
+                                        <p className="text-[10px] text-gray-400 font-semibold uppercase">{formatRelativeTime(post.created_at)}</p>
+                                    </div>
+                                </div>
+
+                                {post.user_id === userId && (
+                                    <div className="relative">
+
+                                        <button onClick={() => setOpenMenuId(openMenuId === post.id ? null : post.id)}
+                                            className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+                                                <MoreHorizontal size={20} className="text-gray-500"/>
+                                        </button>
+                                            
+                                            {openMenuId === post.id && (
+                                                <div className="absolute right-0 mt-0 w-20 bt-white rounded-ld shadow-md border w-20">
+
+                                                    <button onClick={() => {setEditingPostId(post.id); setEditContent(post.content); setOpenMenuId(null);}} 
+                                                        className="w-full flex items-center gap-2 p-2 text-xs hover:bg-gray-100">
+                                                        <p>Modifier</p>
+                                                    </button>
+
+                                                    <button onClick={() => {deletePost(post.id); setOpenMenuId(null);}}
+                                                        className="w-full flex items-center gap-2 p-2 text-xs text-red-500 hover:bg-gray-100">
+                                                            <p>Supprimer</p>
+                                                    </button>
+
+                                                </div>
+                                            )}
+                                    </div>
+                                )}
+                            </header>
+                           
+                        </article>
+                    ))}
+
+                </div>
+            </main>
+                
             </>
         )
 }
