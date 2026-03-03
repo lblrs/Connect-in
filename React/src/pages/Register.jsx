@@ -107,7 +107,7 @@ function Register() {
 
                     <button type="submit" className="bg-blue-600 mx-16 rounded-full mt-4 py-3">Valider</button>
 
-                    <Link className="mx-auto" to='/register'>Créer un compte</Link>
+                    <Link className="mx-auto" to='/login'>J'ai déjà un compte</Link>
 
                 </form>
 

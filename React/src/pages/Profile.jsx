@@ -20,6 +20,8 @@ function Profile() {
     const [openMenuId, setOpenMenuId] = useState(null);
     const [editUserForm, setEditUserForm] = useState(null);
 
+    const [deleteUserForm, setDeleteUserForm] = useState(null);
+
 
 
     const [posts, setPosts] = useState([]);
@@ -146,14 +148,17 @@ function Profile() {
 
 
     //Delete user
-    const DeleteUser = async () => {
+    const DeleteUser = async (deleteContent) => {
 
-        const response = await fetch('', {
+        const response = await fetch('http://localhost:8000/api/user/delete', {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
-            }
+            },
+
+            body: JSON.stringify({ delete_content: deleteContent })
+
         });
 
         if (response.ok) {
@@ -305,8 +310,8 @@ function Profile() {
     // HTML
     return (
 
-        <>
-            <nav className="mt-3 px-4 max-w-5xl mx-auto flex justify-between items-center relative">
+        < div className="bg-gray-100">
+            <nav className="pt-3 px-4 max-w-5xl mx-auto flex justify-between items-center relative bg-gray-100">
 
                 <div className="flex items-center gap-3 group cursor-pointer">
                     <div className="flex flex-col">
@@ -337,7 +342,7 @@ function Profile() {
             {/* PROFILE */}
             <div className="w-screen flex flex-col items-center">
 
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6 mt-10 md:w-2/5 w-screen flex justify-between">
+                <div className="bg-white rounded-xl border border-gray-200 p-4 mb-6 mt-10 md:w-2/5 w-screen flex justify-between shadow-lg shadow-cyan-500/50">
                     <div className="flex ">
                         <img className="w-20 h-20 rounded-full border-4" src={`http://localhost:8000/storage/${user.avatar}`}></img>
                         <div className="flec flex-col mx-5">
@@ -351,22 +356,23 @@ function Profile() {
                             onClick={() => setOpenMenuId(openMenuId === user.id ? null : user.id)}></Settings>
 
                         {openMenuId === user.id && (
-                            <div className="absolute right-0 mt-0 w-20 bt-white rounded-ld shadow-md border">
+                            <div className="absolute right-0 mt-0 bt-white rounded-ld shadow-md border bg-white">
 
                                 <button
-                                    className="w-full flex items-center gap-2 p-2 text-xs hover:bg-gray-100"
+                                    className="w-full flex items-center gap-2 p-2 text-lg hover:bg-gray-100"
                                     onClick={() => setEditUserForm(editUserForm === user.id ? null : user.id)}>
                                     <p>Modifier</p>
                                 </button>
 
                                 <button
-                                    className="w-full flex items-center gap-2 p-2 text-xs text-red-500 hover:bg-gray-100"
+                                    className="w-full flex items-center gap-2 p-2 text-lg text-red-500 hover:bg-gray-100"
                                     onClick={logout}>
                                     <p>Déconnecter</p>
                                 </button>
 
                                 <button
-                                    className="w-full flex items-center gap-2 p-2 text-xs text-red-500 hover:bg-gray-100">
+                                    className="w-full flex items-center gap-2 p-2 text-lg  text-red-500 hover:bg-gray-100"
+                                    onClick={() => setDeleteUserForm(deleteUserForm === user.id ? null : user.id)}>
                                     <p>Supprimer</p>
                                 </button>
 
@@ -431,13 +437,26 @@ function Profile() {
                 )}
 
 
+                {deleteUserForm === user.id && (
+                    <div className="absolute right-0 mx-5 my-5 w-full h-full bg-black/25 flex justify-center items-center gap-5">
+
+                        <button className="bg-gray-200 p-1 rounded text-xl"
+                            onClick={() => DeleteUser(false)}>Supprimer le compte</button>
+
+                        <button className="bg-gray-200 p-1 rounded text-xl"
+                            onClick={() => DeleteUser(true)}>Supprimer le contenue</button>
+
+                    </div>
+                )}
+
+
 
 
                 {/* POSTS */}
                 <div className="space-y-4 p-4 mb-6 mt-10 md:w-2/5 ">
 
                     <div>
-                        <h2  className="text-4xl mx-3">Activité</h2>
+                        <h2 className="text-4xl mx-3">Activité</h2>
                         <hr className="my-3"></hr>
                     </div>
 
@@ -453,12 +472,12 @@ function Profile() {
                             <header className="p-4 flex justify-between items-center">
                                 <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate(`/profile/${post.user?.id}`)}>
                                     <img
-                                        src={`https://ui-avatars.com/api/?name=${post.user?.first_name}&background=0D8ABC&color=fff`}
+                                        src={`http://localhost:8000/storage/${user.avatar}`}
                                         className="w-11 h-11 rounded-full border-2 border-gray-50"
                                         alt="Avatar"
                                     />
                                     <div>
-                                        <h2 className="font-bold text-sm text-gray-900">{post.user?.first_name}{post.user?.last_name}</h2>
+                                        <h2 className="font-bold text-sm text-gray-900">{post.user?.first_name} {post.user?.last_name}</h2>
                                         <p className="text-[10px] text-gray-400 font-semibold uppercase">{formatRelativeTime(post.created_at)}</p>
                                     </div>
                                 </div>
@@ -512,7 +531,10 @@ function Profile() {
                             </div>
 
                             {editingPostId !== post.id && (
+                                <>
                                 <p className="ml-5 mb-5 text-[14px] text-gray-800 leading-relaxed whitespace-pre-wrap">{post.content}</p>
+                                <img className="ml-5 mb-5 text-[14px] text-gray-800 leading-relaxed whitespace-pre-wrap" src={`http://localhost:8000/storage/${post.image}`}></img>
+                                </>
                             )}
 
                             <div className="flex border-y border-gray-100 bg-gray-50/50">
@@ -569,7 +591,7 @@ function Profile() {
 
             </div >
 
-        </>
+        </div>
 
     );
 
