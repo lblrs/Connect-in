@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Like;
 use App\Models\Post;
-
 class LikeController extends Controller
 {
     public function toggle(Post $post)

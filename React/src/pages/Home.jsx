@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import ButtonPost from "../components/ButtonPost";
-import { MoreHorizontal,Edit2, Trash2, Image as ImageIcon,Send, Heart,MessageCircle } from "lucide-react";
+import { MoreHorizontal, Image as ImageIcon, Heart } from "lucide-react";
 
 
 function Home(){
-    // Memory section (States)
+    // Memory section (States) 
     const [posts, setPost] = useState([]);
     const [newPost, setNewPost] = useState('');
     const [likedPosts, setLikedPosts] = useState({});
@@ -27,12 +27,12 @@ function Home(){
                     'Authorization': `Bearer ${token}`
                 }
             });
-
+            
             if (response.ok) {
                 const data = await response.json();
                 setPost(data);
             }
-
+            
             else if (response.status === 401) {
                 navigate('/login');
             }
@@ -85,7 +85,7 @@ function Home(){
                     'Accept': 'application/json'
                 },
                 body: JSON.stringify({
-                    content: newPost
+                    content: newPost 
                 })
             });
             if (response.ok) {
@@ -117,7 +117,7 @@ function Home(){
             [postId]: !prev[postId]
         }));
     };
-
+    
     //Delete the Posts
     const deletePost = async (postId) => {
         if(!window.confirm("Voulez-vous vraiment supprimer cette publication ?")) return;
@@ -166,7 +166,7 @@ function Home(){
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
-
+                    
             },
             body: JSON.stringify({ content: text})
             });
@@ -182,10 +182,10 @@ function Home(){
     //Delete the Comments
 
     const deleteComment = async (postId, commentId) => {
-
+            
         if (!commentId) return;
 
-
+        
             if (!window.confirm("Voulez-vous supprimer ce commentaire ?")) return;
 
             try {
@@ -193,12 +193,12 @@ function Home(){
                     method: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${token}`,
-                        'Accept': 'application/json'
+                        'Accept': 'application/json' 
                     }
                 });
 
                 if (response.ok) {
-                    loadPosts();
+                    loadPosts(); 
                 } else if (response.status === 403) {
                     alert("");
                 }
@@ -209,7 +209,7 @@ function Home(){
         return(
             //Logo and branding
             <>
-
+            
             <nav className="mt-3 mb-3 px-4 max-w-5xl mx-auto flex justify-between items-center relative">
 
                     <div className="flex items-center gap-3 group cursor-pointer">
@@ -235,13 +235,13 @@ function Home(){
             </nav>
 
             <main className="max-w-xl mx-auto px-4">
-
+               
                 {/* Post Creator*/}
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6">
 
                     <form onSubmit={submit}>
 
-                        <textarea
+                        <textarea 
                             className="w-full p-3 bg-gray-50 rounded-xl border-none outline-none text-sm text-gray-700 resize-none focus:ring-1 focus:ring-blue-100"
                             placeholder={`Quoi de neuf, ${userProfile?.first_name} ?`}
                             rows="3"
@@ -258,14 +258,15 @@ function Home(){
                             </button>
 
                             <ButtonPost
-                                Arg="Publier"
+                                Arg="Publier" 
                                 type="submit"
-                                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-1.5 rounded-full font-bold text-xs shadow-sm transition-all active:scale-95"
+                                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-1.5 rounded-full font-bold text-xs shadow-sm transition-all active:scale-95" 
                             />
                         </div>
-
+                        
                     </form>
                 </div>
+                {/*For the post that not availble for shere the user post*/}
                 <div className="space-y-4">
 
                     {posts.length === 0 && (
@@ -273,23 +274,24 @@ function Home(){
                          border-gray-200">Aucune publication pour le moment...
                         </div>
                     )}
-
+                        {/*For shere the Posts */}
                     {posts.map((post) => (
                         <article key={post.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
 
                             <header className="p-4 flex justify-between items-center">
                                 <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate(`/profile/${post.user?.id}`)}>
-                                    <img
-                                        src={`https://ui-avatars.com/api/?name=${post.user?.first_name}&background=0D8ABC&color=fff`}
-                                        className="w-11 h-11 rounded-full border-2 border-gray-50"
-                                        alt="Avatar"
+                                    <img 
+                                        src={`https://ui-avatars.com/api/?name=${post.user?.first_name}&background=0D8ABC&color=fff`} 
+                                        className="w-11 h-11 rounded-full border-2 border-gray-50" 
+                                        alt="Avatar" 
                                     />
                                     <div>
                                         <h2 className="font-bold text-sm text-gray-900">{post.user?.first_name}{post.user?.last_name}</h2>
                                         <p className="text-[10px] text-gray-400 font-semibold uppercase">{formatRelativeTime(post.created_at)}</p>
                                     </div>
                                 </div>
-
+                                
+                                {/*Dots  Icone in the Psot */}
                                 {post.user_id === userId && (
                                     <div className="relative">
 
@@ -298,10 +300,11 @@ function Home(){
                                                 <MoreHorizontal size={20} className="text-gray-500"/>
                                         </button>
 
+                                          {/*Table for Edite and Delete the posts */}  
                                             {openMenuId === post.id && (
-                                                <div className="absolute right-0 mt-0 w-20 bt-white rounded-ld shadow-md border">
+                                                <div className="absolute right-0 mt-0 w-20 bt-white rounded-ld shadow-md border w-20">
 
-                                                    <button onClick={() => {setEditingPostId(post.id); setEditContent(post.content); setOpenMenuId(null);}}
+                                                    <button onClick={() => {setEditingPostId(post.id); setEditContent(post.content); setOpenMenuId(null);}} 
                                                         className="w-full flex items-center gap-2 p-2 text-xs hover:bg-gray-100">
                                                         <p>Modifier</p>
                                                     </button>
@@ -316,13 +319,80 @@ function Home(){
                                     </div>
                                 )}
                             </header>
+                                {/*Button in Edite button for save or cancel the masioin*/}
+                           <div className="px-5 pb-5">
 
+                            {editingPostId === post.id && (
+                                <div className="space-y-3 bg-blue-50 p-3 rounded-xl border border-blue-100">
+
+                                    <textarea className="w-full p-3 b border-none rounded-lg text-sm bg-white outline-none focus:ring-2 focus:ring-blue-200
+                                    resize-none shadow-sm"
+                                    rows="3"
+                                    value={editContent}
+                                    onChange={(e) => setEditContent(e.target.value)}></textarea>
+
+                                    <div className="flex-gap-2 justify-end">
+                                        <button onClick={() => updatePost(post.id)} className="bg-blue-600 text-white
+                                        px-4 py-1.5 rounded-lg text-xs font-bold ">Sauvegarder</button>
+                                        <button onClick={() => setEditingPostId(null)} className="bg-gray-200 ml-3 rounded-lg px-3 py-0.8 ">Annuler</button>
+                                    </div>
+
+                                </div>
+                            )}
+                           </div>
+                           {editingPostId !== post.id && (
+                            <p className="ml-5 mb-5 text-[14px] text-gray-800 leading-relaxed whitespace-pre-wrap">{post.content}</p>
+                           )}
+                           {/*Icone like from the Library (lucide-react)*/}
+                            <div className="flex border-y border-gray-100 bg-gray-50/50">
+                                <button 
+                                    onClick={() => toggleLike(post.id)}
+                                    className={`flex-1 py-3 text-[13px] font-bold flex items-center justify-center gap-2 transition-all 
+                                        ${likedPosts[post.id]}`}>
+                                    <Heart 
+                                        size={18} 
+                                        fill={likedPosts[post.id] ? "currentColor" : "none"} 
+                                        className={likedPosts[post.id] ? "text-red-600" : "text-gray-500"}
+                                    ></Heart>
+                                </button>
+                            </div>
+
+                                     {/*Part of Add Comments and Delete comments */} 
+      
+                            <footer className="bg-gray-50 p-4">
+                                <div className="flex gap-3 mb-5">
+                                    <input className="flex-1 px-4 py-2 bg-white border border-gray-200 rounded-full text-xs outline-none
+                                    focus:ring-2 focus:ring-blue-100 shadow-sm"
+                                    placeholder="Ecrir un commentaire..."
+                                    value={commentTexts[post.id] || ""} 
+                                    onChange={(e) => setCommentTexts({...commentTexts, [post.id]: e.target.value})}/>
+
+                                    <button onClick={() => handleComment(post.id)}
+                                        className="text-blue-600 text-[11px] font-black uppercase hove:scale-105 transition-transform">Envoyer</button>
+                                </div>
+                                        {/*Delete Comments*/}
+                                <div className="space-y-3">
+                                    {post.comments?.map(com => (
+                                        <div key={com.id} className="flex flex-col bg-white p-3 rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.02)] border border-gray-100">
+                                            <div className="flex justify-between items-center mb-1">
+                                                <span className="font-bold text-[11px] text-blue-900">{com.user?.first_name} {com.user?.last_name}</span>
+                                                {com.user_id === userId && (
+                                                <button onClick={() => deleteComment(post.id, com.id)} className="text-[9px] text-red-400 font-bold hover:underline">
+                                                    Supprimer
+                                                </button>
+                                                )}
+                                            </div>
+                                            <p className="text-[12px] text-gray-700 leading-snug">{com.content}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </footer>
                         </article>
                     ))}
 
                 </div>
             </main>
-
+                
             </>
         )
 }

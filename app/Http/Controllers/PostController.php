@@ -46,7 +46,7 @@ class PostController extends Controller
     //Get all posts
     public function getAllPosts()
     {
-        $posts = Post::with('user')->get();
+        $posts = Post::with(['user', 'comments.user'])->latest()->get();
         return response()->json($posts);
     }
 
@@ -72,12 +72,20 @@ class PostController extends Controller
     }
 
     //Delete post
-    public function deletePost(Comment $comments, $id)
-    {
-        $post = Post::findOrFail($id);
-        $this->authorize('delete', $post);
-        $post->delete();
-        $comments->delete();
-        return response()->json(['message' => 'Post supprimé']);
+public function deletePost($id)
+{
+    $post = Post::findOrFail($id);
+
+    if ($post->user_id !== auth()->id()) {
+        return response()->json([
+            'message' => ''
+        ], 403);
     }
+    $post->comments()->delete();
+    $post->delete();
+
+    return response()->json([
+        'message' => 'Post et ses commentaires supprimés avec succès'
+    ]);
+}
 }

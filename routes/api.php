@@ -35,7 +35,7 @@ Route::middleware('auth:sanctum')->group(function () {
     //POSTS
 
     //Create post
-    Route::post('/posts', [PostController::class, 'createPost']);
+    Route::post('/createPost', [PostController::class, 'createPost']);
 
     //Get all posts
     Route::get('/getAllPosts', [PostController::class, 'getAllPosts']);
@@ -65,6 +65,7 @@ Route::middleware('auth:sanctum')->group(function () {
     //Edit comment
     Route::put('/post/{post_id}/editComment/{comment_id}', [CommentController::class, 'editComment']);
 
-    // Delet comment
+    // Delete comment
     Route::delete('/post/{post_id}/deleteComment/{comment_id}', [CommentController::class, 'deleteComment']);
+
 });
