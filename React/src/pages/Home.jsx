@@ -299,7 +299,7 @@ function Home(){
                                         </button>
 
                                             {openMenuId === post.id && (
-                                                <div className="absolute right-0 mt-0 w-20 bt-white rounded-ld shadow-md border w-20">
+                                                <div className="absolute right-0 mt-0 w-20 bt-white rounded-ld shadow-md border">
 
                                                     <button onClick={() => {setEditingPostId(post.id); setEditContent(post.content); setOpenMenuId(null);}}
                                                         className="w-full flex items-center gap-2 p-2 text-xs hover:bg-gray-100">
