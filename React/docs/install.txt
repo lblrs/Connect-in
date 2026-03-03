@@ -1,0 +1,6 @@
+npx create-react-app connect_in
+npm install npm start
+
+dans index.html : <script src="https://cdn.tailwindcss.com"></script>
+
+Router : nmp install react-router-dom
