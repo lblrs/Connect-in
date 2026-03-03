@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use App\Models\Comment;
 use App\Models\Post;
 use Illuminate\Support\Facades\Validator;
-use SebastianBergmann\CodeCoverage\Report\PHP;
 
 class CommentController extends Controller
 {
@@ -17,7 +16,7 @@ class CommentController extends Controller
             'content' => 'required|string|max:280',
         ]);
 
-        if($validator -> fails()) {
+        if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
 
