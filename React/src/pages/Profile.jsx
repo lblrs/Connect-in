@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Settings } from 'lucide-react';
+import { MoreHorizontal, Edit2, Trash2, Image as ImageIcon, Send, Heart, MessageCircle } from "lucide-react";
+
+
 
 function Profile() {
 
@@ -11,10 +15,23 @@ function Profile() {
     const [last_name, setLastName] = useState('')
     const [avatar, setAvatar] = useState(null);
     const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
 
-    const [comment, setComment] = useState('');
+    const [openMenuId, setOpenMenuId] = useState(null);
+    const [editUserForm, setEditUserForm] = useState(null);
+
+
 
     const [posts, setPosts] = useState([]);
+
+
+    const [likedPosts, setLikedPosts] = useState({});
+    const [commentTexts, setCommentTexts] = useState({});
+    const [editingPostId, setEditingPostId] = useState(null);
+    const [editContent, setEditContent] = useState("");
+    const [userId, setUserId] = useState(null);
+    const [userProfile, setUserProfile] = useState(null);
+    const [activeCommentPostId, setActiveCommentPostId] = useState(null);
 
 
 
@@ -164,25 +181,116 @@ function Profile() {
     }
 
 
-    const submitComment = async (e, postId) => {
-        e.preventDefault();
+    //Time management
+    const formatRelativeTime = (dateString) => {
+        const now = new Date();
+        const postDate = new Date(dateString);
+        const diff = Math.floor((now - postDate) / 1000);
 
-        const response = await fetch(`http://localhost:8000/api/post/${postId}/comment`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({
-                content: comment
-            })
-        });
+        if (diff < 60) return "A'instant";
+        if (diff < 3600) return `Il y a ${Math.floor(diff / 60)}min`;
+        if (diff < 86400) return `Il y a ${Math.floor(diff / 3600)}h`;
+        if (diff < 604800) return `Il y a ${Math.floor(diff / 86400)}j`;
 
-        if (response.ok) {
-            setComment('');
-            loadPosts();
+        return "Il y a 1 semain";
+    };
+
+    //Like and Dislike
+    const toggleLike = (postId) => {
+        setLikedPosts(prev => ({
+            ...prev,
+            [postId]: !prev[postId]
+        }));
+    };
+
+    //Delete the Posts
+    const deletePost = async (postId) => {
+        if (!window.confirm("Voulez-vous vraiment supprimer cette publication ?")) return;
+
+        try {
+            const response = await fetch(`http://localhost:8000/api/deletePost/${postId}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (response.ok) {
+                loadPosts();
+            }
+        } catch (error) {
+            console.error('Erreur lors de la suppression du post', error);
         }
-    }
+    };
+
+    //Edit the Posts
+    const updatePost = async (postId) => {
+        try {
+            const response = await fetch(`http://localhost:8000/api/editPost/${postId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ content: editContent })
+            });
+            if (response.ok) {
+                setEditingPostId(null);
+                loadPosts();
+            }
+        } catch (error) {
+            console.error('Erreur lors de la modification du post', error);
+        }
+    };
+
+    //Send new comment
+    const handleComment = async (postId) => {
+        const text = commentTexts[postId];
+        if (!text?.trim()) return;
+
+        try {
+            const response = await fetch(`http://localhost:8000/api/post/${postId}/comment`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+
+                },
+                body: JSON.stringify({ content: text })
+            });
+            if (response.ok) {
+                setCommentTexts(prev => ({ ...prev, [postId]: '' }));
+                loadPosts();
+            }
+        } catch (error) {
+            console.error("Erreur lors de l'envoi du commentaire", error);
+        }
+    };
+
+    //Delete the Comments
+
+    const deleteComment = async (postId, commentId) => {
+
+        if (!commentId) return;
+
+
+        if (!window.confirm("Voulez-vous supprimer ce commentaire ?")) return;
+
+        try {
+            const response = await fetch(`http://localhost:8000/api/post/${postId}/deleteComment/${commentId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Accept': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                loadPosts();
+            } else if (response.status === 403) {
+                alert("");
+            }
+        } catch (error) {
+            console.error('Erreur suppression commentaire', error);
+        }
+    };
 
 
 
@@ -197,62 +305,271 @@ function Profile() {
     // HTML
     return (
 
-        <div className="w-screen h-screen bg-stone-300 flex flex-col items-center">
+        <>
+            <nav className="mt-3 px-4 max-w-5xl mx-auto flex justify-between items-center relative">
 
-            <div className="w-1/2 bg-white p-8 mt-10 rounded-xl">
-                <img className="w-44 h-44 rounded-full border-4" src={`http://localhost:8000/storage/${user.avatar}`}></img>
-                <p className="mt-8 text-5xl">{user.first_name} {user.last_name}</p>
-                <p className="mt-2 text-xl">{user.email}</p>
-            </div>
+                <div className="flex items-center gap-3 group cursor-pointer">
+                    <div className="flex flex-col">
+                        <h1 className="text-xl font-black text-gray-900 tracking-tighter leading-none">NEXUS</h1>
+                        <span className="text-[9px] font-bold text-blue-600 tracking-[0.2em] uppercase mt-0.5">Platform</span>
+                    </div>
+                </div>
 
-
-            {/* POSTS */}
-
-            <div className="w-1/2 bg-white p-8 mt-10 rounded-xl">
-                <h1 className="text-5xl">Activité</h1>
-                <hr></hr>
-
-                {posts.map((post) =>
-
-                    <div key={post.id} className="mt-3 p-5 border rounded-xl ">
-                        <div className="flex">
-                            <img className="w-16 h-16 rounded-full " src={`http://localhost:8000/storage/${user.avatar}`}></img>
-                            <h2 className="text-2xl px-3">{post.user.first_name} {post.user.last_name}</h2>
+                <div className="flex items-center gap-4">
+                    <div className="hidden sm:flex flex-col items-end border-r border-gray-100 pr-4">
+                        <div className="flex items-center gap-1 mt-1">
+                            <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
+                            <span className="text-[10px] font-medium text-gray-400">En ligne</span>
                         </div>
-                        <p className="mt-10 mb-5 mx-5">{post.content}</p>
-                        <hr />
-
-                        <form onSubmit={(e) => submitComment(e, post.id)}>
-                            <input className="w-1/2 border m-3 rounded-3xl p-1" placeholder="Ajoutez un commentaire"
-                                value={comment}
-                                onChange={(e) => setComment(e.target.value)}></input>
-                            <button type="submit">Envoyer</button>
-                        </form>
-
-                        <div className="mt-5">
-                            {post.comments && post.comments.map((comment) => (
-                                <div key={comment.id}>
-
-                                    <div className="flex">
-                                        <img className="w-10 h-10 rounded-full " src={`http://localhost:8000/storage/${comment.user.avatar}`}></img>
-                                        <h2 className="px-3">{comment.user.first_name} {comment.user.last_name}</h2>
-                                    </div>
-
-                                    <p className="px-5 py-3">{comment.content}</p>
-
-                                </div>
-                            ))}
-                        </div>
-
-
                     </div>
 
+                    <div className="relative">
+                        <div className="w-10 h-10 rounded-full ring-2 ring-offset-2 ring-blue-500/20 overflow-hidden
+                            cursor-pointer hover:ring-blue-500/50 transition-all shadow-md active:scale-90">
+                            <img src={`http://localhost:8000/storage/${user.avatar}`}></img>
 
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+
+            {/* PROFILE */}
+            <div className="w-screen flex flex-col items-center">
+
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6 mt-10 md:w-2/5 w-screen flex justify-between">
+                    <div className="flex ">
+                        <img className="w-20 h-20 rounded-full border-4" src={`http://localhost:8000/storage/${user.avatar}`}></img>
+                        <div className="flec flex-col mx-5">
+                            <p className="md:text-4xl text-2xl">{user.first_name} {user.last_name}</p>
+                            <p className="mt-2 mx-2 md:text-xl ">{user.email}</p>
+                        </div>
+                    </div>
+                    <div className="relative">
+
+                        <Settings type="button" className="self-end opacity-50 hover:opacity-100"
+                            onClick={() => setOpenMenuId(openMenuId === user.id ? null : user.id)}></Settings>
+
+                        {openMenuId === user.id && (
+                            <div className="absolute right-0 mt-0 w-20 bt-white rounded-ld shadow-md border">
+
+                                <button
+                                    className="w-full flex items-center gap-2 p-2 text-xs hover:bg-gray-100"
+                                    onClick={() => setEditUserForm(editUserForm === user.id ? null : user.id)}>
+                                    <p>Modifier</p>
+                                </button>
+
+                                <button
+                                    className="w-full flex items-center gap-2 p-2 text-xs text-red-500 hover:bg-gray-100"
+                                    onClick={logout}>
+                                    <p>Déconnecter</p>
+                                </button>
+
+                                <button
+                                    className="w-full flex items-center gap-2 p-2 text-xs text-red-500 hover:bg-gray-100">
+                                    <p>Supprimer</p>
+                                </button>
+
+                            </div>
+
+                        )}
+
+                    </div>
+                </div>
+
+
+                {editUserForm === user.id && (
+                    <div className="absolute right-0 mx-5 my-5 w-full h-full bg-black/25 flex justify-center items-center">
+                        <form className="flex flex-col text-xl w-2/3 h-fit pb-5 gap-5 bg-zinc-200 rounded-xl border border-gray-400">
+
+                            <div className="flex flex-col mx-10 mt-10">
+                                <label>Prénom</label>
+                                <input className="rounded-md border border-black p-1 mt-2"
+                                    type="text"
+                                    onChange={(e) => setFirstName(e.target.value)}></input>
+                            </div>
+
+                            <div className="flex flex-col mx-10 mt-10">
+                                <label>Nom</label>
+                                <input className="rounded-md border border-black p-1 mt-2"
+                                    type="text"
+                                    onChange={(e) => setLastName(e.target.value)}></input>
+                            </div>
+
+
+
+                            <div className="flex flex-col mx-10 mt-10">
+                                <label>Email</label>
+                                <input className="rounded-md border border-black p-1 mt-2"
+                                    type="email"
+                                    onChange={(e) => setEmail(e.target.value)}></input>
+                            </div>
+
+                            <div className="flex flex-col mx-10 mt-10">
+                                <label>Mot de passe</label>
+                                <input className="rounded-md border border-black p-1 mt-2"
+                                    type="password"
+                                    onChange={(e) => setPassword(e.target.value)}></input>
+                            </div>
+
+                            <div className="flex flex-col mx-10 mt-10">
+                                <label className="mx-5">Photo</label>
+                                <input type="file"
+                                    className="m-3"
+                                    onChange={(e) => setAvatar(e.target.files[0])}></input>
+                            </div>
+
+
+
+
+                            <button type="submit" className="bg-blue-600 mx-16 rounded-full mt-4 py-3"
+                                onClick={UpdateProfile}>Valider</button>
+
+
+                        </form>
+                    </div>
                 )}
 
-            </div>
 
-        </div >
+
+
+                {/* POSTS */}
+                <div className="space-y-4 p-4 mb-6 mt-10 md:w-2/5 ">
+
+                    <div>
+                        <h2  className="text-4xl mx-3">Activité</h2>
+                        <hr className="my-3"></hr>
+                    </div>
+
+                    {posts.length === 0 && (
+                        <div className="text-center py-12 text-gray-400 italic bg-white rounded-2xl border border-dashed
+                         border-gray-200">Aucune publication pour le moment...
+                        </div>
+                    )}
+
+                    {posts.map((post) => (
+                        <article key={post.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+
+                            <header className="p-4 flex justify-between items-center">
+                                <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate(`/profile/${post.user?.id}`)}>
+                                    <img
+                                        src={`https://ui-avatars.com/api/?name=${post.user?.first_name}&background=0D8ABC&color=fff`}
+                                        className="w-11 h-11 rounded-full border-2 border-gray-50"
+                                        alt="Avatar"
+                                    />
+                                    <div>
+                                        <h2 className="font-bold text-sm text-gray-900">{post.user?.first_name}{post.user?.last_name}</h2>
+                                        <p className="text-[10px] text-gray-400 font-semibold uppercase">{formatRelativeTime(post.created_at)}</p>
+                                    </div>
+                                </div>
+
+                                {post.user_id === userId && (
+                                    <div className="relative">
+
+                                        <button onClick={() => setOpenMenuId(openMenuId === post.id ? null : post.id)}
+                                            className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+                                            <MoreHorizontal size={20} className="text-gray-500" />
+                                        </button>
+
+                                        {openMenuId === post.id && (
+                                            <div className="absolute right-0 mt-0 w-20 bt-white rounded-ld shadow-md border w-20">
+
+                                                <button onClick={() => { setEditingPostId(post.id); setEditContent(post.content); setOpenMenuId(null); }}
+                                                    className="w-full flex items-center gap-2 p-2 text-xs hover:bg-gray-100">
+                                                    <p>Modifier</p>
+                                                </button>
+
+                                                <button onClick={() => { deletePost(post.id); setOpenMenuId(null); }}
+                                                    className="w-full flex items-center gap-2 p-2 text-xs text-red-500 hover:bg-gray-100">
+                                                    <p>Supprimer</p>
+                                                </button>
+
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                            </header>
+
+                            <div className="px-5 pb-5">
+
+                                {editingPostId === post.id && (
+                                    <div className="space-y-3 bg-blue-50 p-3 rounded-xl border border-blue-100">
+
+                                        <textarea className="w-full p-3 b border-none rounded-lg text-sm bg-white outline-none focus:ring-2 focus:ring-blue-200
+                                    resize-none shadow-sm"
+                                            rows="3"
+                                            value={editContent}
+                                            onChange={(e) => setEditContent(e.target.value)}></textarea>
+
+                                        <div className="flex-gap-2 justify-end">
+                                            <button onClick={() => updatePost(post.id)} className="bg-blue-600 text-white
+                                        px-4 py-1.5 rounded-lg text-xs font-bold">Sauvegarder</button>
+                                            <button onClick={() => setEditingPostId(null)} className="bg-gray-200">Annuler</button>
+                                        </div>
+
+                                    </div>
+                                )}
+                            </div>
+
+                            {editingPostId !== post.id && (
+                                <p className="ml-5 mb-5 text-[14px] text-gray-800 leading-relaxed whitespace-pre-wrap">{post.content}</p>
+                            )}
+
+                            <div className="flex border-y border-gray-100 bg-gray-50/50">
+                                <button
+                                    onClick={() => toggleLike(post.id)}
+                                    className={`flex-1 py-3 text-[13px] font-bold flex items-center justify-center gap-2 transition-all
+                                        ${likedPosts[post.id]}`}>
+                                    <Heart
+                                        size={18}
+                                        fill={likedPosts[post.id] ? "currentColor" : "none"}
+                                        className={likedPosts[post.id] ? "text-red-600" : "text-gray-500"}
+                                    ></Heart>
+                                </button>
+                            </div>
+
+
+                            <footer className="bg-gray-50/40 p-4">
+
+                                <div className="flex gap-3 mb-5">
+                                    <input
+                                        className="flex-1 px-4 py-2 bg-white border border-gray-200 rounded-full text-xs outline-none focus:ring-2 focus:ring-blue-100 shadow-sm"
+                                        placeholder="Écrire un commentaire..."
+                                        value={commentTexts[post.id] || ""}
+                                        onChange={(e) => setCommentTexts({ ...commentTexts, [post.id]: e.target.value })}
+                                    />
+                                    <button onClick={() => handleComment(post.id)} className="text-blue-600 text-[11px] font-black uppercase hover:scale-105 transition-transform">
+                                        Envoyer
+                                    </button>
+                                </div>
+
+                                <div className="space-y-3">
+                                    {post.comments?.map(com => (
+                                        <div key={com.id} className="flex flex-col bg-white p-3 rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.02)] border border-gray-100">
+                                            <div className="flex justify-between items-center mb-1">
+                                                <span className="font-bold text-[11px] text-blue-900">{com.user?.first_name} {com.user?.last_name}</span>
+                                                {com.user_id === userId && (
+                                                    <button onClick={() => deleteComment(post.id, com.id)} className="text-[9px] text-red-400 font-bold hover:underline">
+                                                        Supprimer
+                                                    </button>
+                                                )}
+                                            </div>
+                                            <p className="text-[12px] text-gray-700 leading-snug">{com.content}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </footer>
+
+                        </article>
+                    ))}
+
+
+
+                </div>
+
+            </div >
+
+        </>
 
     );
 
