@@ -139,7 +139,7 @@ function Profile() {
 
         if (response.ok) {
             localStorage.removeItem('token');
-
+            
             navigate('/login');
         };
 
@@ -310,7 +310,7 @@ function Profile() {
     // HTML
     return (
 
-        < div className="bg-gray-100">
+        < div className="h-full bg-gray-100">
             <nav className="pt-3 px-4 max-w-5xl mx-auto flex justify-between items-center relative bg-gray-100">
 
                 <div className="flex items-center gap-3 group cursor-pointer">
@@ -342,7 +342,7 @@ function Profile() {
             {/* PROFILE */}
             <div className="w-screen flex flex-col items-center">
 
-                <div className="bg-white rounded-xl border border-gray-200 p-4 mb-6 mt-10 md:w-2/5 w-screen flex justify-between shadow-lg shadow-cyan-500/50">
+                <div className="bg-white rounded-xl border border-gray-200-5 p-4 mb-6 mt-10 lg:w-2/5 w-4/5 flex justify-between shadow-lg shadow-cyan-500/50">
                     <div className="flex ">
                         <img className="w-20 h-20 rounded-full border-4" src={`http://localhost:8000/storage/${user.avatar}`}></img>
                         <div className="flec flex-col mx-5">
@@ -453,7 +453,7 @@ function Profile() {
 
 
                 {/* POSTS */}
-                <div className="space-y-4 p-4 mb-6 mt-10 md:w-2/5 ">
+                <div className="space-y-4 p-4 mb-6 mt-10 2xl:w-2/5 lg:w-3/5 md:w-9/12 w-11/12 ">
 
                     <div>
                         <h2 className="text-4xl mx-3">Activité</h2>
@@ -532,9 +532,16 @@ function Profile() {
 
                             {editingPostId !== post.id && (
                                 <>
-                                <p className="ml-5 mb-5 text-[14px] text-gray-800 leading-relaxed whitespace-pre-wrap">{post.content}</p>
-                                <img className="ml-5 mb-5 text-[14px] text-gray-800 leading-relaxed whitespace-pre-wrap" src={`http://localhost:8000/storage/${post.image}`}></img>
-                                </>
+                                    <p className="ml-5 mb-5 text-[14px] text-gray-800 leading-relaxed whitespace-pre-wrap">{post.content}</p>
+                                    {post.image && (
+                                        <div className="m-5">
+                                            <img
+                                                className=" rounded-lg "
+                                                src={`http://localhost:8000/storage/${post.image}`}
+                                                alt="post"
+                                            />
+                                        </div>
+                                    )}                                 </>
                             )}
 
                             <div className="flex border-y border-gray-100 bg-gray-50/50">
