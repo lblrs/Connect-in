@@ -310,7 +310,7 @@ function Profile() {
     // HTML
     return (
 
-        < div className="h-full bg-gray-100">
+        < div className="min-h-screen bg-gray-100">
             <nav className="pt-3 px-4 max-w-5xl mx-auto flex justify-between items-center relative bg-gray-100">
 
                 <div className="flex items-center gap-3 group cursor-pointer">

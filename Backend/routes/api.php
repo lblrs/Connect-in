@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\GroupController;
 use App\Http\Controllers\LikeController;
 use App\Http\Controllers\PostController;
 
@@ -67,5 +68,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Delete comment
     Route::delete('/post/{post_id}/deleteComment/{comment_id}', [CommentController::class, 'deleteComment']);
+
+
+
+    // GROUP
+    Route::post('/createGroup', [GroupController::class, 'createGroup']);
 
 });
