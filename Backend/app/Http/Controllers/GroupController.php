@@ -36,7 +36,13 @@ class GroupController extends Controller
     {
         $groups = Group::get()
         ->where('user_id', $request->user()->id);
-        
+
         return response()->json($groups);
+    }
+
+
+    public function getGroup (Group $group)
+    {
+        return response()->json($group);
     }
 }

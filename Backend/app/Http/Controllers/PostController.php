@@ -72,20 +72,20 @@ class PostController extends Controller
     }
 
     //Delete post
-public function deletePost($id)
-{
-    $post = Post::findOrFail($id);
+    public function deletePost($id)
+    {
+        $post = Post::findOrFail($id);
 
-    if ($post->user_id !== auth()->id()) {
+        if ($post->user_id !== auth()->id()) {
+            return response()->json([
+                'message' => ''
+            ], 403);
+        }
+        $post->comments()->delete();
+        $post->delete();
+
         return response()->json([
-            'message' => ''
-        ], 403);
+            'message' => 'Post et ses commentaires supprimés avec succès'
+        ]);
     }
-    $post->comments()->delete();
-    $post->delete();
-
-    return response()->json([
-        'message' => 'Post et ses commentaires supprimés avec succès'
-    ]);
-}
 }

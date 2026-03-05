@@ -1,15 +1,16 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+
 
 export default function Group() {
-
-    const [groups, setGroups] = useState([]);
+    const [group, setGroup] = useState([]);
+    const {id} = useParams();
     const token = localStorage.getItem('token');
     const navigate = useNavigate();
 
-    const fetchGroup = async (e) => {
+    const fetchGroup = async (id) => {
 
-        const response = await fetch('http://localhost:8000/api/getGroups', {
+        const response = await fetch(`http://localhost:8000/api/group/${id}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -19,35 +20,33 @@ export default function Group() {
 
         if (response.ok) {
             const data = await response.json();
-            setGroups(data);
+            setGroup(data);
         }
-
-
-
     }
 
     useEffect(() => {
         if (token) {
-            fetchGroup();
+            fetchGroup(id);
+            console.log(group);
         } else {
-            navigate('/logn')
-
+            navigate('/login');
         }
-
     }, []);
 
-    if (groups) {
-        console.log(groups);    
+    if (!group.name) {
+        return (
+            <div>Loading</div>
+        )
     }
 
 
     return (
-       <div>
-        {groups.map(g =>
-            <div key={g.id}>
-                <h1>{g.name}</h1>
-            </div>
-        )}
-       </div>
+        <div>
+
+            <h1>{group.name}</h1>
+
+        </div>
+
     )
+
 }

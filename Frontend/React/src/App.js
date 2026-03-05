@@ -14,7 +14,7 @@ function App() {
         <Route path='/login' element={<Login />}></Route>
         <Route path='/profile' element={<Profile />}></Route>
         <Route path='/home' element={<Home />}></Route>
-        <Route path='/Group' element={<Group />}></Route>
+        <Route path="/group/:id" element={<Group />}></Route>
       </Routes>
     </BrowserRouter>
   );

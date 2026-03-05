@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Settings, MessageCircleMore } from 'lucide-react';
-import { MoreHorizontal, Edit2, Trash2, Image as ImageIcon, Send, Heart, MessageCircle } from "lucide-react";
+import { MoreHorizontal, Edit2, Trash2, Image as ImageIcon, Send, Heart, MessageCircle, SquarePlus } from "lucide-react";
 
 
 
@@ -17,9 +17,11 @@ function Profile() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [groups, setGroups] = useState([]);
+    const [groupName, setGroupName] = useState('');
 
     const [openMenuId, setOpenMenuId] = useState(null);
     const [editUserForm, setEditUserForm] = useState(null);
+    const [groupForm, setGroupForm] = useState(null);
 
     const [deleteUserForm, setDeleteUserForm] = useState(null);
 
@@ -317,11 +319,36 @@ function Profile() {
     }
 
 
+
+    const createGroup = async (e) => {
+        e.preventDefault();
+
+        const response = await fetch('http://localhost:8000/api/createGroup', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                name: groupName
+            })
+        })
+
+        if (response.ok) {
+            fetchGroups();  
+            setGroupForm(null);          
+        }
+    }
+
+
     if (!user || !groups) {
         return (
             <p>Loading</p>
         )
     }
+
+
+
 
 
 
@@ -469,9 +496,28 @@ function Profile() {
 
 
                 {/* GROUPS */}
+
                 <div className="lg:w-2/5 w-4/5 flex flex-wrap gap-5">
+
+                    {groupForm === user.id && (
+                        <div>
+                            <form className=" flex gap-2 border-2 border-gray-300 rounded-xl px-5 py-1 text-md font-bold items-center"
+                                onSubmit={createGroup}>
+
+                                <input className="bg-gray-100 hover:bg-gray-200 border border-cyan-500 rounded px-1" placeholder="Nom de groupe"
+                                    onChange={(e) => setGroupName(e.target.value)}></input>
+
+                                <button type="submit" className="border border-cyan-500 bg-gray-100 hover:bg-gray-200 px-3 rounded">Valider</button>
+
+                            </form>
+                        </div>
+                    )}
+
+                    <button onClick={() => setGroupForm(groupForm === user.id ? null : user.id)}><SquarePlus className="text-cyan-500 hover:text-cyan-700"></SquarePlus></button>
+
                     {groups.map(g =>
-                        <button className="flex gap-2 border-2 border-gray-300 rounded-xl px-5 py-1 text-md font-bold items-center hover:bg-gray-300 hover:border-gray-500">
+                        <button className="flex gap-2 border-2 border-gray-300 rounded-xl px-5 py-1 text-md font-bold items-center hover:bg-gray-300 hover:border-gray-500"
+                            onClick={() => navigate(`/group/${g.id}`)}>
                             <MessageCircleMore className="h-6"></MessageCircleMore>
                             <p>{g.name}</p>
                         </button>
