@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Settings } from 'lucide-react';
+import { Settings, MessageCircleMore } from 'lucide-react';
 import { MoreHorizontal, Edit2, Trash2, Image as ImageIcon, Send, Heart, MessageCircle } from "lucide-react";
 
 
@@ -16,6 +16,7 @@ function Profile() {
     const [avatar, setAvatar] = useState(null);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [groups, setGroups] = useState([]);
 
     const [openMenuId, setOpenMenuId] = useState(null);
     const [editUserForm, setEditUserForm] = useState(null);
@@ -82,6 +83,7 @@ function Profile() {
 
             loadUser();
             loadPosts();
+            fetchGroups();
 
         } else {
             navigate('/login');
@@ -139,7 +141,7 @@ function Profile() {
 
         if (response.ok) {
             localStorage.removeItem('token');
-            
+
             navigate('/login');
         };
 
@@ -298,8 +300,24 @@ function Profile() {
     };
 
 
+    // Get groups
+    const fetchGroups = async () => {
+        const response = await fetch('http://localhost:8000/api/getGroups', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        })
 
-    if (!user) {
+        if (response.ok) {
+            const data = await response.json();
+            setGroups(data);
+        }
+    }
+
+
+    if (!user || !groups) {
         return (
             <p>Loading</p>
         )
@@ -450,6 +468,15 @@ function Profile() {
                 )}
 
 
+                {/* GROUPS */}
+                <div className="lg:w-2/5 w-4/5 flex flex-wrap gap-5">
+                    {groups.map(g =>
+                        <button className="flex gap-2 border-2 border-gray-300 rounded-xl px-5 py-1 text-md font-bold items-center hover:bg-gray-300 hover:border-gray-500">
+                            <MessageCircleMore className="h-6"></MessageCircleMore>
+                            <p>{g.name}</p>
+                        </button>
+                    )}
+                </div>
 
 
                 {/* POSTS */}

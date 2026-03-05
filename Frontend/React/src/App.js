@@ -4,6 +4,7 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Profile from './pages/Profile';
 import Home from './pages/Home';
+import Group from './pages/Group';
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Route path='/login' element={<Login />}></Route>
         <Route path='/profile' element={<Profile />}></Route>
         <Route path='/home' element={<Home />}></Route>
+        <Route path='/Group' element={<Group />}></Route>
       </Routes>
     </BrowserRouter>
   );

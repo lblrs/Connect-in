@@ -38,4 +38,5 @@ class GroupPostController extends Controller
             'post' => $groupPost
         ]);
     }
+
 }

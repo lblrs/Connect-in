@@ -72,6 +72,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
     // GROUP
+
+    // Create group
     Route::post('/createGroup', [GroupController::class, 'createGroup']);
+
+    // Get groups
+    Route::get('/getGroups', [GroupController::class, 'getGroups']);
 
 });

@@ -30,4 +30,13 @@ class GroupController extends Controller
             'group' => $group
         ], 201);
     }
+
+
+    public function getGroups(Request $request)
+    {
+        $groups = Group::get()
+        ->where('user_id', $request->user()->id);
+        
+        return response()->json($groups);
+    }
 }
