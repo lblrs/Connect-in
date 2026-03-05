@@ -248,7 +248,7 @@ function Home() {
                 </div>
             </nav>
 
-            <main className="space-y-4 p-4 mb-6 mt-10 2xl:w-2/5 lg:w-3/5 md:w-9/12 w-11/12 m-auto">
+            <main className="space-y-6 p-4 xl:w-[600px] lg:w-[550px] md:w-9/12 w-full m-auto">
 
                 {/* Post Creator*/}
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6">
@@ -296,6 +296,7 @@ function Home() {
                          border-gray-200">Aucune publication pour le moment...
                         </div>
                     )}
+                    
                     {/*For shere the Posts */}
                     {posts.map((post) => (
                         <article key={post.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
@@ -342,6 +343,7 @@ function Home() {
                                     </div>
                                 )}
                             </header>
+                            
                             {/*Button in Edite button for save or cancel the masioin*/}
                             <div className="px-5 pb-5">
 
@@ -363,18 +365,23 @@ function Home() {
                                     </div>
                                 )}
                             </div>
+                            {/*Texts section */}
                             {editingPostId !== post.id && (
                                 <>
                                     <p className="ml-5 mb-5 text-[14px] text-gray-800 leading-relaxed whitespace-pre-wrap">{post.content}</p>
-                                    {post.image && (
-                                        <div className="m-5">
-                                            <img
-                                                className=" rounded-lg "
-                                                src={`http://localhost:8000/storage/${post.image}`}
-                                                alt="post"
-                                            />
-                                        </div>
-                                    )}                                </>
+                                                                   </>
+                            )}
+                            
+                            {/*Images section*/}
+                            {post?.image && (
+                                <div className="w-full bg-[#f3f2f0] border-y border-gray-100 flex items-center justify-center overflow-hidden">
+                                    <img
+                                        src={`http://localhost:8000/storage/${post.image}`} 
+                                        alt="Post content"
+                                        className="max-w-full h-auto max-h-[550px] object-contain"
+                                        onError={(e) => e.target.closest('div').style.display = 'none'}
+                                    />
+                                </div>
                             )}
                             {/*Icone like from the Library (lucide-react)*/}
                             <div className="flex border-y border-gray-100 bg-gray-50/50">
