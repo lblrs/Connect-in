@@ -97,4 +97,61 @@ class GroupController extends Controller
         $users = User::all();
         return response()->json($users);
     }
+
+
+    /**
+     * @OA\Put(
+     *     path="/api/updateGroup/{id}",
+     *     summary="Update a group",
+     *     tags={"Groups"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"name"},
+     *             @OA\Property(property="name", type="string", example="New Group Name")
+     *         )
+     *     ),
+     *     @OA\Response(response=200, description="Group updated"),
+     *     @OA\Response(response=404, description="Group not found"),
+     *     @OA\Response(response=422, description="Validation error")
+     * )
+     */
+    public function updateGroup(Request $request, $id)
+    {
+        $group = Group::findOrFail($id);
+        $request->validate(['name' => 'required|max:20']);
+        $group->fill($request->only(['name']));
+        $group->save();
+        return response()->json(['message' => 'Groupe modifié', $group]);
+    }
+
+    /**
+     * @OA\Delete(
+     *     path="/api/deleteGroup/{id}",
+     *     summary="Delete a group",
+     *     tags={"Groups"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="Group deleted"),
+     *     @OA\Response(response=404, description="Group not found")
+     * )
+     */
+    public function deleteGroup($id)
+    {
+        $group = Group::findOrFail($id);
+        $group->delete();
+        return response()->json(['message' => 'groupe supprimé']);
+    }
 }
