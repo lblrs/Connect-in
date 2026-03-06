@@ -7,10 +7,40 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
-
+/**
+ * @OA\Info(
+ *     title="Connect'in API",
+ *     version="1.0.0",
+ *     description="API documentation for Connect'in"
+ * )
+ * @OA\SecurityScheme(
+ *     securityScheme="bearerAuth",
+ *     type="http",
+ *     scheme="bearer",
+ *     bearerFormat="JWT"
+ * )
+ */
 class AuthController extends Controller
 {
-    //1 Func: Handle new user registration requests (OOP)
+    /**
+     * @OA\Post(
+     *     path="/api/register",
+     *     summary="Register a new user",
+     *     tags={"Auth"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"first_name","last_name","email","password"},
+     *             @OA\Property(property="first_name", type="string", example="John"),
+     *             @OA\Property(property="last_name", type="string", example="Doe"),
+     *             @OA\Property(property="email", type="string", example="john@mail.com"),
+     *             @OA\Property(property="password", type="string", example="password123")
+     *         )
+     *     ),
+     *     @OA\Response(response=201, description="Successfully registered"),
+     *     @OA\Response(response=422, description="Validation error")
+     * )
+     */
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -20,12 +50,10 @@ class AuthController extends Controller
             'password' => 'required|string|min:8',
         ]);
 
-        //Validation for transfer the data in database
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
 
-        //data for send in database
         $user = User::create([
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
@@ -33,40 +61,46 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        //Confirmation the data
         return response()->json([
             'message' => 'Successfully registered!',
             'user' => $user
         ], 201);
     }
 
-
-
-    //2 Func: Login
-
+    /**
+     * @OA\Post(
+     *     path="/api/login",
+     *     summary="Login",
+     *     tags={"Auth"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"email","password"},
+     *             @OA\Property(property="email", type="string", example="john@mail.com"),
+     *             @OA\Property(property="password", type="string", example="password123")
+     *         )
+     *     ),
+     *     @OA\Response(response=200, description="Welcome"),
+     *     @OA\Response(response=401, description="Invalid credentials"),
+     *     @OA\Response(response=422, description="Validation error")
+     * )
+     */
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'email' => 'required | string | email',
-            'password' => 'required | string',
+            'email' => 'required|string|email',
+            'password' => 'required|string',
         ]);
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
 
-        //find the users form the email
         $user = User::where('email', $request->email)->first();
 
-        //Checking the existence of the user and the correctness of the password
-
         if (!$user || !Hash::check($request->password, $user->password)) {
-            return response()->json([
-                'message' => 'The information entred is incorrct'
-            ], 401);
+            return response()->json(['message' => 'The information entered is incorrect'], 401);
         }
-
-        //Creating a security token
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
@@ -77,23 +111,46 @@ class AuthController extends Controller
         ]);
     }
 
-
-    //3 Func: Logout
+    /**
+     * @OA\Post(
+     *     path="/api/logout",
+     *     summary="Logout",
+     *     tags={"Auth"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(response=200, description="Logged out successfully")
+     * )
+     */
     public function logout(Request $request)
     {
         if ($request->user()) {
             $request->user()->currentAccessToken()->delete();
-            return response()->json([
-                'message' => 'Logged out successfully'
-            ]);
-            return response()->json([
-                'message' => 'No active session found'
-            ], 401);
+            return response()->json(['message' => 'Logged out successfully']);
         }
     }
 
-
-    //4 Func: Update profile
+    /**
+     * @OA\Put(
+     *     path="/api/user/update",
+     *     summary="Update profile",
+     *     tags={"Auth"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(
+     *                 @OA\Property(property="first_name", type="string"),
+     *                 @OA\Property(property="last_name", type="string"),
+     *                 @OA\Property(property="email", type="string"),
+     *                 @OA\Property(property="avatar", type="string", format="binary"),
+     *                 @OA\Property(property="password", type="string"),
+     *                 @OA\Property(property="password_confirmation", type="string")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(response=200, description="Profile updated successfully"),
+     *     @OA\Response(response=422, description="Validation error")
+     * )
+     */
     public function update(Request $request)
     {
         $user = $request->user();
@@ -105,13 +162,13 @@ class AuthController extends Controller
             'email' => 'string|email|max:255|unique:users,email,' . $user->id,
             'password' => 'nullable|string|min:8|confirmed',
         ]);
+
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
 
         $user->fill($request->only(['first_name', 'last_name', 'email']));
 
-        $imagePath = null;
         if ($request->hasFile('avatar')) {
             $imagePath = $request->file('avatar')->store('user', 'public');
             $user->avatar = $imagePath;
@@ -129,13 +186,24 @@ class AuthController extends Controller
         ]);
     }
 
-
-    //5 Func: Delete profles
+    /**
+     * @OA\Delete(
+     *     path="/api/user/delete",
+     *     summary="Delete account",
+     *     tags={"Auth"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="delete_content",
+     *         in="query",
+     *         description="Delete all user content",
+     *         @OA\Schema(type="boolean")
+     *     ),
+     *     @OA\Response(response=200, description="Account successfully deleted")
+     * )
+     */
     public function destroy(Request $request)
     {
         $user = $request->user();
-
-        //User Choice: Should the content be deleted?
         $delete_content = $request->boolean('delete_content');
 
         if ($delete_content) {
@@ -147,12 +215,10 @@ class AuthController extends Controller
             $user->comments()->update(['user_id' => null]);
             $user->likes()->delete();
         }
-        //In both cases!
+
         $user->tokens()->delete();
         $user->delete();
 
-        return response()->json([
-            'message' => 'Account successfully deleted'
-        ]);
+        return response()->json(['message' => 'Account successfully deleted']);
     }
 }
