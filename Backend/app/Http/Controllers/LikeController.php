@@ -4,8 +4,24 @@ namespace App\Http\Controllers;
 
 use App\Models\Like;
 use App\Models\Post;
+
 class LikeController extends Controller
 {
+    /**
+     * @OA\Post(
+     *     path="/api/post/{id}/like",
+     *     summary="Toggle like on a post",
+     *     tags={"Likes"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="Like added or removed")
+     * )
+     */
     public function toggle(Post $post)
     {
         $userId = auth()->id();
