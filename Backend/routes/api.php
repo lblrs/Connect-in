@@ -82,5 +82,8 @@ Route::middleware('auth:sanctum')->group(function () {
     // Get one group
     Route::get('/group/{group}', [GroupController::class, 'getGroup']);
 
+    // Get all users
+    Route::get('getAllUsers', [GroupController::class, 'getAllUsers']);
+
 
 });

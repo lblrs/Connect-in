@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Group;
 
+use App\Models\User;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -44,5 +46,11 @@ class GroupController extends Controller
     public function getGroup (Group $group)
     {
         return response()->json($group);
+    }
+
+    public function getAllUsers ()
+    {
+        $users = User::all();
+        return response()->json($users);
     }
 }

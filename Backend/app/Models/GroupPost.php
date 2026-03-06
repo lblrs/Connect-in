@@ -7,8 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class GroupPost extends Model
 {
     protected $fillable = [
-        'user_id',
         'group_id',
+        'user_id',
         'content',
         'image'
     ];
