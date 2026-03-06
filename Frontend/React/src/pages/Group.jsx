@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Settings, MessageCircleMore, SquarePlus, ArrowBigLeft } from 'lucide-react';
+import { Settings, MessageCircleMore, SquarePlus, ArrowBigLeft, Trash2 } from 'lucide-react';
 
 
 export default function Group() {
@@ -8,6 +8,8 @@ export default function Group() {
     const [group, setGroup] = useState([]);
     const [users, setUsers] = useState([]);
     const [addUser, setAddUser] = useState(null);
+    const [settings, setSettings] = useState(null);
+    const [groupName, setGroupName] = useState('');
     const { id } = useParams();
     const token = localStorage.getItem('token');
     const navigate = useNavigate();
@@ -64,6 +66,37 @@ export default function Group() {
         }
     }
 
+
+    const deleteGroup = async (id) => {
+
+        const response = await fetch(`http://localhost:8000/api/deleteGroup/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+
+        })
+
+        if (response.ok) {
+            navigate('/profile')
+
+        }
+    }
+
+
+    const updateGroup = async (id) => {
+
+        const response = await fetch(`http://localhost:8000/api/updateGroup/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({name : groupName})
+        })
+    }
+
     useEffect(() => {
         if (token) {
             fetchGroup(id);
@@ -85,9 +118,23 @@ export default function Group() {
         <div className="h-screen w-screen flex bg-gray-100 justify-between">
             <div className="w-1/12 bg-gray-100 flex flex-col gap-2.5 mt-5">
 
-                <div className="flex justify-between mx-2  ">
+                <div className="flex justify-between mx-2 relative ">
                     <button onClick={() => navigate('/profile')}><ArrowBigLeft></ArrowBigLeft></button>
-                    <button><Settings></Settings></button>
+                    <button
+                        onClick={() => setSettings(settings === null ? true : null)}><Settings></Settings></button>
+                    {settings && (
+                        <div>
+                            <form onSubmit={() => updateGroup(id)}>
+                                <input placeholder="Nom"
+                                    onChange={(e) => setGroupName(e.target.value)}></input>
+                                <button>Valider</button>
+                            </form>
+                        </div>
+                    )}
+
+                    <button type="submit"
+                        onClick={() => deleteGroup(id)}><Trash2></Trash2></button>
+
                 </div>
                 <hr className=" border-black my-2"></hr>
 
