@@ -1,0 +1,69 @@
+services:
+    backend:
+        build:
+            context: './Backend/vendor/laravel/sail/runtimes/8.4'
+            dockerfile: Dockerfile
+            args:
+                WWWGROUP: '${WWWGROUP:-1000}'
+        image: 'sail-8.4/app'
+        extra_hosts:
+            - 'host.docker.internal:host-gateway'
+        ports:
+            - '8000:80'
+        environment:
+            WWWUSER: '${WWWUSER:-1000}'
+            LARAVEL_SAIL: 1
+        volumes:
+            - './Backend:/var/www/html'
+        networks:
+            - sail
+        depends_on:
+            mysql:
+                condition: service_healthy
+        entrypoint: [ "/bin/bash", "/var/www/html/docker-entrypoint.sh" ]
+
+    frontend:
+        image: node:20
+        container_name: connectin_frontend
+        working_dir: /app
+        volumes:
+            - './Frontend/React:/app'
+        ports:
+            - '3000:3000'
+        environment:
+            - CI=false
+            - PORT=3000
+        command: sh -c "npm install && npm start"
+        networks:
+            - sail
+
+    mysql:
+        image: 'mysql:8.4'
+        ports:
+            - '3307:3306'
+        environment:
+            MYSQL_ROOT_PASSWORD: 'password'
+            MYSQL_ROOT_HOST: '%'
+            MYSQL_DATABASE: 'connect_in'
+            MYSQL_USER: 'connectin_user'
+            MYSQL_PASSWORD: 'password'
+        volumes:
+            - 'sail-mysql:/var/lib/mysql'
+        networks:
+            - sail
+        healthcheck:
+            test:
+                - CMD
+                - mysqladmin
+                - ping
+                - '-p${DB_PASSWORD:-password}'
+            retries: 3
+            timeout: 5s
+
+networks:
+    sail:
+        driver: bridge
+
+volumes:
+    sail-mysql:
+        driver: local
