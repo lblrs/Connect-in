@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import ButtonPost from "../components/ButtonPost";
-import { MoreHorizontal, Image as ImageIcon, Heart } from "lucide-react";
+import { MoreHorizontal, Image as ImageIcon, Heart,Search } from "lucide-react";
 
 
 function Home() {
@@ -19,6 +19,7 @@ function Home() {
     const [userProfile, setUserProfile] = useState(null);
     const [openMenuId, setOpenMenuId] = useState(null);
     const fileInputRef = useRef(null);
+    const [searchTerm, setSearchTerm] = useState("");
     //1: To get information from the server
     const loadPosts = async () => {
         try {
@@ -223,6 +224,7 @@ function Home() {
     return (
         //Logo and branding
         <>
+        
 
             <nav className="mt-3 mb-3 px-4 max-w-5xl mx-auto flex justify-between items-center relative">
 
@@ -230,6 +232,18 @@ function Home() {
                     <div className="flex flex-col">
                         <h1 className="text-xl font-black text-gray-900 tracking-tighter leading-none">NEXUS</h1>
                         <span className="text-[9px] font-bold text-blue-600 tracking-[0.2em] uppercase mt-0.5">Platform</span>
+                    </div>
+                    {/* Rechercher Section*/}
+                    <div className="relative">
+                        <input
+                            type="text"
+                            placeholder="Rechercher"
+                            className="w-full pl-12 ml-2 py-2 bg-white border border-gray-300 rounded-2xl outline-none text-sm"
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                            <Search size={18} strokeWidth={2.5} />
+                        </div>
                     </div>
                 </div>
 
@@ -240,11 +254,28 @@ function Home() {
                             <span className="text-[10px] font-medium text-gray-400">En ligne</span>
                         </div>
                     </div>
+                        {/*profile image in Home page */}
+                 <div className="relative" onClick={() => navigate('/profile')}>
+                    <div className="w-10 h-10 rounded-full ring-2 ring-offset-2 ring-blue-500/20 overflow-hidden cursor-pointer bg-gray-100">
+                        
+                        {userProfile?.avatar && (
+                            <img 
+                                src={`http://localhost:8000/storage/${userProfile.avatar}`} 
+                                className="w-full h-full object-cover"
+                                alt="Profile"
+                            />
+                        )}
 
-                    <div className="relative">
-                        <div className="w-10 h-10 rounded-full ring-2 ring-offset-2 ring-blue-500/20 overflow-hidden
-                            cursor-pointer hover:ring-blue-500/50 transition-all shadow-md active:scale-90"></div>
+                        {!userProfile?.avatar && (
+                            <img 
+                                src={`https://ui-avatars.com/api/?name=${userProfile?.first_name}`} 
+                                className="w-full h-full object-cover"
+                                alt="Default"
+                            />
+                        )}
+
                     </div>
+                </div>
                 </div>
             </nav>
 
@@ -298,17 +329,24 @@ function Home() {
                     )}
                     
                     {/*For shere the Posts */}
-                    {posts.map((post) => (
+                    {/*Serech Posts and Users */}
+                    {posts
+                        .filter(p => p.content?.toLowerCase().includes(searchTerm.toLowerCase()) || p.user?.first_name?.toLowerCase().includes(searchTerm.toLowerCase()))
+                        .map((post) => (
+
                         <article key={post.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
 
-
                             <header className="p-4 flex justify-between items-center">
+                                
                                 <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate(`/profile/${post.user?.id}`)}>
-                                    <img
-                                        src={`https://ui-avatars.com/api/?name=${post.user?.first_name}&background=0D8ABC&color=fff`}
-                                        className="w-11 h-11 rounded-full border-2 border-gray-50"
-                                        alt="Avatar"
-                                    />
+                                        <img
+                                            src={post.user?.avatar 
+                                                ? `http://localhost:8000/storage/${post.user.avatar}` 
+                                                : `https://ui-avatars.com/api/?name=${post.user?.first_name}&background=0D8ABC&color=fff`
+                                            }
+                                            className="w-11 h-11 rounded-full border-2 border-gray-50 object-cover shadow-sm"
+                                            alt="Avatar"
+                                        />
                                     <div>
                                         <h2 className="font-bold text-sm text-gray-900">{post.user?.first_name} {post.user?.last_name}</h2>
                                         <p className="text-[10px] text-gray-400 font-semibold uppercase">{formatRelativeTime(post.created_at)}</p>
@@ -369,7 +407,7 @@ function Home() {
                             {editingPostId !== post.id && (
                                 <>
                                     <p className="ml-5 mb-5 text-[14px] text-gray-800 leading-relaxed whitespace-pre-wrap">{post.content}</p>
-                                                                   </>
+                                </>
                             )}
                             
                             {/*Images section*/}
