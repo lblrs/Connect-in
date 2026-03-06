@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import ButtonPost from "../components/ButtonPost";
-import { MoreHorizontal, Image as ImageIcon, Heart,Search } from "lucide-react";
+import { MoreHorizontal, Image as ImageIcon, Heart,Search,Pencil, Trash2, } from "lucide-react";
 
 
 function Home() {
@@ -229,7 +229,8 @@ function Home() {
             <nav className="mt-3 mb-3 px-4 max-w-5xl mx-auto flex justify-between items-center relative">
 
                 <div className="flex items-center gap-3 group cursor-pointer">
-                    <div className="flex flex-col">
+                    <div className="flex flex-col" onClick={() => navigate('/home')}>
+                        
                         <h1 className="text-xl font-black text-gray-900 tracking-tighter leading-none">NEXUS</h1>
                         <span className="text-[9px] font-bold text-blue-600 tracking-[0.2em] uppercase mt-0.5">Platform</span>
                     </div>
@@ -246,7 +247,20 @@ function Home() {
                         </div>
                     </div>
                 </div>
+{/*Home and Chat*/}
+                <div className="hidden md:flex items-center gap-6 border-l border-gray-200 pl-6 ml-4">
+                    <button onClick={() => navigate('/home')}
+                        className="flex items-center gap-2 text-gray-600 py-1">
+                            
+                        <span className="text-xs font-bold uppercase tracking-wider">Home</span>
+                    </button>
 
+                    <button onClick={() => navigate('/Group')}
+                            className=" flex items-center gap-2 text-gray-600 py-1">
+                                
+                            <span className="text-xs font-bold uppercase tracking-wider">Chat</span>
+                    </button>
+                </div>
                 <div className="flex items-center gap-4">
                     <div className="hidden sm:flex flex-col items-end border-r border-gray-100 pr-4">
                         <div className="flex items-center gap-1 mt-1">
@@ -338,7 +352,7 @@ function Home() {
 
                             <header className="p-4 flex justify-between items-center">
                                 
-                                <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate(`/profile/${post.user?.id}`)}>
+                                <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate(`/profile`)}>
                                         <img
                                             src={post.user?.avatar 
                                                 ? `http://localhost:8000/storage/${post.user.avatar}` 
@@ -364,15 +378,17 @@ function Home() {
 
                                         {/*Table for Edite and Delete the posts */}
                                         {openMenuId === post.id && (
-                                            <div className="absolute right-0 mt-0 bt-white rounded-ld shadow-md border w-20">
+                                            <div className="absolute right-0 w-36 bg-white rounded-xl shadow-xl border border-gray-100  overflow-hidden ">
 
                                                 <button onClick={() => { setEditingPostId(post.id); setEditContent(post.content); setOpenMenuId(null); }}
-                                                    className="w-full flex items-center gap-2 p-2 text-xs hover:bg-gray-100">
+                                                    className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                                                        <Pencil size={15} strokeWidth={2.5} />
                                                     <p>Modifier</p>
                                                 </button>
 
                                                 <button onClick={() => { deletePost(post.id); setOpenMenuId(null); }}
-                                                    className="w-full flex items-center gap-2 p-2 text-xs text-red-500 hover:bg-gray-100">
+                                                    className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-medium text-red-500 hover:bg-red-50 transition-colors">
+                                                        <Trash2 size={15} strokeWidth={2.5} />
                                                     <p>Supprimer</p>
                                                 </button>
 
@@ -449,7 +465,7 @@ function Home() {
                                         className="text-blue-600 text-[11px] font-black uppercase hove:scale-105 transition-transform">Envoyer</button>
                                 </div>
                                 {/*Delete Comments*/}
-                                <div className="space-y-3">
+                                <div className="space-y-3" >
                                     {post.comments?.map(com => (
                                         <div key={com.id} className="flex flex-col bg-white p-3 rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.02)] border border-gray-100">
                                             <div className="flex justify-between items-center mb-1">
