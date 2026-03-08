@@ -296,6 +296,7 @@ http://localhost:8000/api/documentation
 - [x] Système de commentaires
 - [x] Système de likes
 - [x] Gestion des groupes
+- [x] Barre de recherche
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
