@@ -48,6 +48,7 @@ Connect'in est une plateforme sociale complète construite avec un backend robus
 
 ### Fonctionnalités principales :
 * 👥 Gestion des utilisateurs et authentification
+* ✏️ Modification de profil
 * 📝 Création et partage de posts
 * 💬 Système de commentaires
 * 👍 Système de likes
@@ -292,6 +293,7 @@ http://localhost:8000/api/documentation
 ## Fonctionnalités
 
 - [x] Authentification utilisateur
+- [x] Modification de profil
 - [x] Système de posts
 - [x] Système de commentaires
 - [x] Système de likes
