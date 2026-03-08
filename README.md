@@ -76,6 +76,11 @@ Connect'in est une plateforme sociale complète construite avec un backend robus
 
 ![Aperçu 2](Documentation/images/Screenshot2.png)
 
+### Databse
+
+![Aperçu 3](Documentation/DataBase.jpg)
+
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ## Démarrage rapide
